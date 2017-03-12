@@ -1,0 +1,27 @@
+﻿{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": false,
+        "sourceMap": true,
+        "inlineSources": true,
+        "noEmitOnError": true,
+        "rootDir": "source",
+        "outDir": "dist",
+        "declarationDir": "dist",
+        "traceResolution": true,
+        "moduleResolution": "node",
+        "typeRoots": [ "custom_typings", "./custom_typings", "../custom_typings", "../node_modules", "../node_modules/@types" ],
+        "declaration": true
+    }, 
+    "include": ["**/*.ts"],
+    "exclude": [
+        "dist",
+        "build",
+        "platforms",
+        "www",
+        "bower_components",
+        "node_modules"
+    ]
+}
