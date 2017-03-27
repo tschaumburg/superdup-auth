@@ -1,0 +1,49 @@
+﻿<div>
+    Hello 
+    <span ng-hide="ctrl.isLoggedIn()">Anonymous</span>
+    <span ng-show="ctrl.isLoggedIn()">{{auth.user.handle}}</span>
+</div>
+<div>
+    <p></p>
+    <table>
+        <tr>
+            <td colspan="2" align="center">
+                <img src="{{auth.user.picture}}" height="128" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">{{auth.user.handle}}</td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center"><b>id_token</b></td>
+        </tr>
+        <tr ng-repeat="(key, value) in auth.user.idtokenClaims">
+            <td>{{key}}</td>
+            <td>{{value}}</td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <button ng-hide="ctrl.isLoggedIn()" ng-click="ctrl.login()">
+                    Log in...
+                </button>
+                <button ng-show="ctrl.isLoggedIn()" ng-click="ctrl.logout()">
+                    Log out...
+                </button>
+            </td>
+        </tr>
+    </table>
+
+    <p></p>
+
+    <div ng-init="accessTokens = auth.getAccessTokens()">
+        <table ng-repeat="(tokenname, token) in accessTokens track by tokenname">
+            <tr>
+                <td colspan="2" align="center"><b>access_token {{tokenname}}</b></td>
+            </tr>
+            <tr ng-repeat="(key, value) in token">
+                <td>{{key}}</td>
+                <td>{{value}}</td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -20,6 +20,7 @@ export interface IAuthService
     login(userstate?: any): ng.IPromise<void>;
     handleRedirect(url: string): ng.IPromise<any>;
     readonly user: auth.UserInfo;
+    logout(): ng.IPromise<void>;
 
     //********************************************************************
     //* Access Tokens:
@@ -27,6 +28,7 @@ export interface IAuthService
     //* 
     //* 
     //********************************************************************
+    getAccessTokens(): { [id: string]: {}; };
     getAccessTokenFor(url: string): ng.IPromise<string>;
 }
 
@@ -40,7 +42,7 @@ export class AuthService implements IAuthService
     {
     }
 
-    public login(userstate: {uistate?: string, custom?: any} = null): ng.IPromise<void>
+    public login(userstate: { uistate?: string, custom?: any } = null): ng.IPromise<void>
     {
         var deferred = this.$q.defer<void>();
 
@@ -59,6 +61,15 @@ export class AuthService implements IAuthService
                 deferred.reject(reason);
             }
         );
+
+        return deferred.promise;
+    }
+
+    public logout(): ng.IPromise<void>
+    {
+        var deferred = this.$q.defer<void>();
+
+        this.authManager.logout();
 
         return deferred.promise;
     }
@@ -101,7 +112,8 @@ export class AuthService implements IAuthService
     private _user: auth.UserInfo = null;
     public get user(): auth.UserInfo
     {
-        return this._user;
+        return this.authManager.userManager.user;
+//        return this._user;
     }
 
 
@@ -111,6 +123,11 @@ export class AuthService implements IAuthService
     //* 
     //* 
     //********************************************************************
+    public getAccessTokens(): { [id: string]: {}; }
+    {
+        return this.authManager.tokenManager.getAccessTokens();
+    }
+
     public getAccessTokenFor(url: string): ng.IPromise<string>
     {
         var deferred = this.$q.defer<string>();

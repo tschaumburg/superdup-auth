@@ -1,4 +1,5 @@
-﻿import { isExpired, getExpiration} from './tokenutils';
+﻿import jwtdecode = require("jwt-decode");
+import { isExpired, getExpiration} from './tokenutils';
 import { UrlDictionary } from './urldictionary';
 import { AccessTokenInfo } from "./tokeninfo";
 import { ITokenStore, LocalStorageTokenStore } from "./tokenstore";
@@ -29,6 +30,13 @@ export interface ITokenManager
         accessTokenName: string,
         accessTokenValue: string
     ): void;
+
+    clearTokenValues(
+        pluginName: string,
+        identityProviderName: string
+    ): void;
+
+    getAccessTokens(): { [id: string]: {}; };
 
     getAccessTokenFor(
         url: string,
@@ -90,11 +98,11 @@ class AccessTokenManager implements ITokenManager
             return;
         }
 
-        this.log.info("Reloaded " + tokens.length + " access tokens from token storage");
+        this.log.info("...reloaded " + tokens.length + " access tokens from token storage");
 
         for (var n = 0; n < tokens.length; n++)
         {
-            this.log.debug("...reloaded access token " + tokens[n].tokenName + " from token storage");
+            this.log.debug("   ...reloaded access token " + tokens[n].tokenName + " from token storage");
             this.saveTokenInfo(tokens[n]);
         }
     }
@@ -242,6 +250,28 @@ class AccessTokenManager implements ITokenManager
         return this._tokensByUrl.getHosts();
     }
 
+    public getAccessTokens(): { [id: string]: {}; }
+    {
+        var res: { [id: string]: {}; } = {};
+
+        for (var name in this._tokensByName)
+        {
+            var tokenInfo = this._tokensByName[name];
+            if (!tokenInfo)
+                continue;
+
+            var encodedToken = tokenInfo.tokenValue;
+            if (!encodedToken)
+                continue;
+
+            var decodedToken = jwtdecode(encodedToken);
+
+            res[name] = decodedToken;
+        }
+
+        return res;
+    }
+
     public getAccessTokenFor(
         url: string,
         success: (token: string) => void,
@@ -319,6 +349,23 @@ class AccessTokenManager implements ITokenManager
         return this._tokensByName[key];
     }
 
+    public lookupTokenInfos(
+        pluginName: string,
+        identityProviderName: string
+    ): AccessTokenInfo[]
+    {
+        var prefix = pluginName + ":" + identityProviderName + ":";
+
+        var res: AccessTokenInfo[] = [];
+        for (var name in this._tokensByName)
+        {
+            if (name.indexOf(prefix) == 0)
+                res.push(this._tokensByName[name]);
+        }
+
+        return res;
+    }
+
     public setTokenValue(
         pluginName: string,
         identityProviderName: string,
@@ -342,6 +389,23 @@ class AccessTokenManager implements ITokenManager
 
         tokenInfo.tokenValue = accessTokenValue;
         tokenInfo.expiresAt = getExpiration(accessTokenValue);
+
+        this.saveState();
+    }
+
+    public clearTokenValues(
+        pluginName: string,
+        identityProviderName: string
+    ): void
+    {
+        var tokenInfos = this.lookupTokenInfos(pluginName, identityProviderName);
+
+        for (var n = 0; n < tokenInfos.length; n++)
+        {
+            var tokenInfo = tokenInfos[n];
+            tokenInfo.tokenValue = null;
+            tokenInfo.expiresAt = 0;
+        }
 
         this.saveState();
     }

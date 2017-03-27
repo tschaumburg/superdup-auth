@@ -54,12 +54,32 @@ export interface IAuthManager
         success: (user: UserInfo, userstate: any) => void,
         error: (reason: any, userstate: any) => void
     ): void;
+
+    //********************************************************************
+    //* Logout:
+    //* =======
+    //* 
+    //********************************************************************
+    logout(
+        pluginName: string,
+        identityProviderName: string
+    ): void
+    logout(): void
 }
 
-export function create(): IAuthManager
+var _authManager: IAuthManager = null;
+export function getAuthManager(): IAuthManager
 {
-    return new AuthManager();
+    if (!_authManager)
+        _authManager = new AuthManager();
+
+    return _authManager;
 }
+
+//export function create(): IAuthManager
+//{
+//    return new AuthManager();
+//}
 
 class AuthManager implements IAuthManager
 {
@@ -342,5 +362,55 @@ class AuthManager implements IAuthManager
             },
             error
         );
+    }
+
+    //********************************************************************
+    //* Logout:
+    //* =======
+    //* 
+    //********************************************************************
+    public logout(): void;
+    public logout(
+        pluginName: string,
+        identityProviderName: string
+    ): void;
+    logout(
+        pluginName?: string,
+        identityProviderName?: string
+    ): void
+    {
+        if (!pluginName)
+            pluginName = this._defaultPlugin;
+
+        if (!identityProviderName)
+            identityProviderName = this._defaultIdentityProvider;
+
+        this.log.info("login(plugin=" + pluginName + ", idp=" + identityProviderName + ")");
+
+        if (!pluginName)
+        {
+            var msg = "login(): plugin must be specified - either explicitly or implicitly through setDefaultProvider()";
+            this.log.error(msg);
+            throw new Error(msg);
+        }
+
+        var plugin = this.pluginManager.findPlugin(pluginName);
+
+        if (!plugin)
+        {
+            var msg = "No plugin named " + pluginName + " has been registered";
+            this.log.error(msg);
+            throw new Error(msg);
+        }
+
+        if (!identityProviderName)
+        {
+            var msg = "login(): identity provider must be specified - either explicitly or implicitly through setDefaultProvider()";
+            this.log.error(msg);
+            throw new Error(msg);
+        }
+
+        this.tokenManager.clearTokenValues(pluginName, identityProviderName);
+        this.userManager.clearUser(pluginName, identityProviderName);
     }
 }

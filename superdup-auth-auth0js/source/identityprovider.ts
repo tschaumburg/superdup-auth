@@ -127,7 +127,8 @@ export class Auth0jsIdentityProvider implements sdpAuth.IIdentityProvider
             givenName: src.given_name,
             familyName: src.family_name,
             picture: src.picture,
-            idtoken: idtoken
+            idtoken: idtoken,
+            idtokenClaims: src,
         }
     }
 

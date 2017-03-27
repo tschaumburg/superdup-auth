@@ -10,9 +10,8 @@
         "rootDir": "source",
         "outDir": "dist",
         "declarationDir": "dist",
-        "traceResolution": true,
+        "traceResolution": false,
         "moduleResolution": "node",
-        "typeRoots": [ "custom_typings", "./custom_typings", "../custom_typings", "../node_modules", "../node_modules/@types" ],
         "declaration": true
     }, 
     "include": ["**/*.ts"],
@@ -22,6 +21,7 @@
         "platforms",
         "www",
         "bower_components",
-        "node_modules"
+        "node_modules",
+        "../node_modules"
     ]
 }

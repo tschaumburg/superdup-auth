@@ -1,16 +1,16 @@
 {
   "name": "superdup-auth-angular",
-  "version": "0.0.3",
+  "version": "0.0.5-build.34",
   "description": "",
-  "main": "dist/superdup-auth-angular.js",
-  "types": "dist/superdup-auth-angular",
+  "main": "dist/index.js",
+  "types": "dist/index",
   "files": [
     "dist/"
   ],
   "dependencies": {
     "@types/node": "^7.0.2",
-    "superdup-auth-core": "*",
-    "angular": "^1.6.1"
+    "angular": "^1.6.1",
+    "superdup-auth-core": "^0.0.1-build.33"
   },
   "devDependencies": {
     "@types/angular": "^1.6.2",

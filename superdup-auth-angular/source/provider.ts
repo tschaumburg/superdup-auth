@@ -47,7 +47,7 @@ export class AuthServiceProvider implements IAuthServiceProvider
     //*    .registerAccessToken("https://admin-api.foobar.com/users", "users", ["read:users", "edit:users"])
     //*    .registerAccessToken("https://admin-api.foobar.com/log", "logs", ["view"]);
     //********************************************************************
-    private static readonly pluginManager: auth.IAuthManager = auth.create();// config.ConfigManager = new config.ConfigManager();
+    private static readonly pluginManager: auth.IAuthManager = auth.getAuthManager();// config.ConfigManager = new config.ConfigManager();
     private log: auth.ILogger = console;
     public setLog(log: auth.ILogger): helpers.IConfigHelper
     {

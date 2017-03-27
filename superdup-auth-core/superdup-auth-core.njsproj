@@ -40,6 +40,7 @@
     <TypeScriptCompile Include="source\tokens\urldictionary.ts" />
     <TypeScriptCompile Include="source\urlutils.ts" />
     <TypeScriptCompile Include="source\users\index.ts" />
+    <TypeScriptCompile Include="source\users\idtokenstore.ts" />
     <TypeScriptCompile Include="source\users\userinfo.ts" />
     <TypeScriptCompile Include="source\users\usermanager.ts" />
   </ItemGroup>

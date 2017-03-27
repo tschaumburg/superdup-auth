@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\superdup-auth-ngdemo",
+    "\\tst"
   ],
-  "SelectedNode": "\\superdup-auth.sln",
+  "SelectedNode": "\\superdup-auth-ngdemo\\package.json",
   "PreviewInSolutionExplorer": false
 }

@@ -23,7 +23,7 @@
     <TypeScriptCompile Include="source\service.ts" />
     <TypeScriptCompile Include="source\helpers.ts" />
     <TypeScriptCompile Include="source\provider.ts" />
-    <TypeScriptCompile Include="source\superdup-auth-angular.ts" />
+    <TypeScriptCompile Include="source\index.ts" />
     <TypeScriptCompile Include="source\utils.ts" />
   </ItemGroup>
   <ItemGroup>

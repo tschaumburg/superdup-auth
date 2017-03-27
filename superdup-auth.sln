@@ -15,6 +15,14 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "superdup-auth-auth0js", "su
 		{EE8BF1EB-D012-4A4C-97B2-234F1E992D6A} = {EE8BF1EB-D012-4A4C-97B2-234F1E992D6A}
 	EndProjectSection
 EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "superdup-auth-oidc", "superdup-auth-oidc\superdup-auth-oidc.njsproj", "{ADA1D536-0178-4D8F-8B79-9861C3CE66BF}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "superdup-auth-ngdemo", "superdup-auth-ngdemo\superdup-auth-ngdemo.njsproj", "{E67B2BB4-6BB8-4EFE-8171-37D5AB8CDAD5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71954F3C-54D3-4007-B8AC-C58A0DC2EA15} = {71954F3C-54D3-4007-B8AC-C58A0DC2EA15}
+		{8A5D12E7-D8D5-4774-B924-F83B9E76727B} = {8A5D12E7-D8D5-4774-B924-F83B9E76727B}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +41,14 @@ Global
 		{71954F3C-54D3-4007-B8AC-C58A0DC2EA15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71954F3C-54D3-4007-B8AC-C58A0DC2EA15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71954F3C-54D3-4007-B8AC-C58A0DC2EA15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADA1D536-0178-4D8F-8B79-9861C3CE66BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADA1D536-0178-4D8F-8B79-9861C3CE66BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADA1D536-0178-4D8F-8B79-9861C3CE66BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADA1D536-0178-4D8F-8B79-9861C3CE66BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E67B2BB4-6BB8-4EFE-8171-37D5AB8CDAD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E67B2BB4-6BB8-4EFE-8171-37D5AB8CDAD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E67B2BB4-6BB8-4EFE-8171-37D5AB8CDAD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E67B2BB4-6BB8-4EFE-8171-37D5AB8CDAD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -39,4 +39,6 @@
     picture: string;
 
     idtoken: string;
+
+    idtokenClaims: {};
 }
