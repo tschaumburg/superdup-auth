@@ -26,9 +26,10 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="custom_typings\auth0-js.d.ts" />
-    <TypeScriptCompile Include="source\identityprovider.ts" />
+    <TypeScriptCompile Include="source\implicit.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="source\options.ts" />
-    <TypeScriptCompile Include="source\plugin.ts" />
     <TypeScriptCompile Include="source\superdup-auth-auth0js.ts" />
   </ItemGroup>
   <ItemGroup>

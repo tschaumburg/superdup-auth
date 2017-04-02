@@ -5,6 +5,7 @@ export interface RedirectParts
 {
     hash?: {
         state?: string;
+        nonce?: string;
     }
 }
 
@@ -75,4 +76,20 @@ export function parseRedirectUrl(redirectUrl: string): RedirectParts
             return null; // error("Malformed state in redirect url - expected JSON-encoded string, got " + JSON.stringify(state), state.uss);
 
         return decodedState as T;
+    }
+
+    export function decodeNonce(redirectUrl: string): string
+    {
+        var parsedRedirect = parseRedirectUrl(redirectUrl);
+
+        if (!parsedRedirect)
+            return null; // error("Not a redirect url", undefined);
+
+        if (!parsedRedirect.hash)
+            return null; // error("Not a redirect url (#-fragment missing)", undefined);
+
+        if (!parsedRedirect.hash.nonce)
+            return null; // error("Not a redirect url ('nonce' missing from #-fragment)", undefined);
+
+        return parsedRedirect.hash.nonce;
     }

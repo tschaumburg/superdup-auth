@@ -3,6 +3,10 @@ import auth = require("superdup-auth-core");
 
 export interface IAuthService
 {
+    login2(loginName: string, accessTokenName: string, userstate?: any): ng.IPromise<void>;
+    //handleRedirect2(url: string): ng.IPromise<any>;
+    logout2(loginName: string): ng.IPromise<void>;
+
     //********************************************************************
     //* Redirect handling:
     //* ==================
@@ -17,10 +21,7 @@ export interface IAuthService
     //*                          the auth result
     //* 
     //********************************************************************
-    login(userstate?: any): ng.IPromise<void>;
-    handleRedirect(url: string): ng.IPromise<any>;
     readonly user: auth.UserInfo;
-    logout(): ng.IPromise<void>;
 
     //********************************************************************
     //* Access Tokens:
@@ -28,7 +29,7 @@ export interface IAuthService
     //* 
     //* 
     //********************************************************************
-    getAccessTokens(): { [id: string]: {}; };
+    getAccessTokens(): { tokenName: string, tokenValue: string }[];
     getAccessTokenFor(url: string): ng.IPromise<string>;
 }
 
@@ -42,22 +43,31 @@ export class AuthService implements IAuthService
     {
     }
 
-    public login(userstate: { uistate?: string, custom?: any } = null): ng.IPromise<void>
+    public get user(): auth.UserInfo
+    {
+        return this.authManager.userManager.user;
+    }
+
+    //********************************************************************
+    //* New API:
+    //* ========
+    //* 
+    //* 
+    //********************************************************************
+    public login2(loginName: string, accessTokenName: string, userstate: { uistate?: string, custom?: any } = null): ng.IPromise<void>
     {
         var deferred = this.$q.defer<void>();
 
-        this.authManager.login(
-            //null,
-            //null,
+        this.authManager.login2(
+            loginName,
+            accessTokenName,
             userstate,
             (user, state) =>
             {
-                this._user = user;
                 deferred.resolve();
             },
             (reason, state) =>
             {
-                this._user = null;
                 deferred.reject(reason);
             }
         );
@@ -65,55 +75,13 @@ export class AuthService implements IAuthService
         return deferred.promise;
     }
 
-    public logout(): ng.IPromise<void>
+    public logout2(loginName: string): ng.IPromise<void>
     {
         var deferred = this.$q.defer<void>();
 
-        this.authManager.logout();
+        this.authManager.logout2(loginName);
 
         return deferred.promise;
-    }
-
-    //********************************************************************
-    //* Redirect handling:
-    //* ==================
-    //* Redirect URLs are expected to be of the form
-    //* 
-    //*    https://host/whatever#state={mod:"oidc", idp:"xx", at:"" ,uss:...userstate...}&access_token...
-    //* 
-    //* where
-    //*    https://host/whatever is the registered URL
-    //*    "sdp:auth=oidc"       identifies the auth module
-    //*    "#..."                is the has fragment carrying 
-    //*                          the auth result
-    //* 
-    //********************************************************************
-    public handleRedirect(url: string): ng.IPromise<any>
-    {
-        var deferred = this.$q.defer<any>();
-
-        this.authManager.handleRedirect(
-            url,
-            (user, state) =>
-            {
-                this._user = user;
-                deferred.resolve(state);
-            },
-            (reason, state) =>
-            {
-                this._user = null;
-                deferred.reject(reason);
-            }
-        );
-
-        return deferred.promise;
-    }
-
-    private _user: auth.UserInfo = null;
-    public get user(): auth.UserInfo
-    {
-        return this.authManager.userManager.user;
-//        return this._user;
     }
 
 
@@ -123,7 +91,7 @@ export class AuthService implements IAuthService
     //* 
     //* 
     //********************************************************************
-    public getAccessTokens(): { [id: string]: {}; }
+    public getAccessTokens(): {tokenName: string, tokenValue: string}[]
     {
         return this.authManager.tokenManager.getAccessTokens();
     }

@@ -1,22 +1,25 @@
-﻿import sdpAuth = require("superdup-auth-core");
+﻿import sdpAuthCore = require("superdup-auth-core");
 import { WebAuth, ParseHashError, TokenPayload } from "auth0-js";
 import auth0jscode = require("auth0-js");
-/////<reference types="./auth0-js.d.ts" />
 import { Auth0jsOptions, AuthFlow } from "./options";
-//import { jwt_decode } from "jwt-decode";
 import jwt_decode = require("jwt-decode");
 
-export class Auth0jsIdentityProvider implements sdpAuth.IIdentityProvider
+export class Auth0Implicit implements sdpAuthCore.Implicit<Auth0jsOptions>
 {
+    private log: sdpAuthCore.ILogger = console;
     private webauth: WebAuth;
 
-    public constructor(private readonly options: Auth0jsOptions)
-    { }
-
-    private log: sdpAuth.ILogger = console;
-    public setLog(_log: sdpAuth.ILogger): void
+    public constructor(private readonly options: Auth0jsOptions, log: sdpAuthCore.ILogger)
     {
-        this.log = _log;
+        this.initImplicit(options, log);
+    }
+
+    public initImplicit(options: Auth0jsOptions, log: sdpAuthCore.ILogger): void
+    {
+        if (!log)
+            log = console;
+
+        this.log = log;
     }
 
     isConnected(): boolean
@@ -39,108 +42,78 @@ export class Auth0jsIdentityProvider implements sdpAuth.IIdentityProvider
                 );
     }
 
-    public login(
-        state: {
-            mod: string;
-            idp: string;
-            uss: any;
-        },
-        requestAccessToken: {
-            name: string,
-            resource: string,
-            scopes: string[],
-        },
-        success: (user: sdpAuth.UserInfo, accessToken: string, userstate: any) => void,
+    public loginImplicit(
+        nonce: string,
+        userstate: any,
+        accessToken: { name: string, resource: string, scopes: string[] },
+        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
         error: (reason: any, userstate: any) => void
     ): void
     {
-        if (this.options.flow == AuthFlow.implicit)
+        //// update the state with the name of any requested access token:
+        //var tokenstate =
+        //    {
+        //        mod: state.mod,
+        //        idp: state.idp,
+        //        uss: state.uss,
+        //        at: accessToken && accessToken.name,
+        //    };
+        var encodedState = JSON.stringify(userstate);//(tokenstate);
+
+        // we're just requesting an idtoken:
+        var audience: string = undefined;
+        var scopestring = "openid profile";
+        var responsetype = "id_token";
+
+        // if a piggybacked access token is requested, update
+        // the params:
+        if (!!accessToken)
         {
-            // update the state with the name of any requested access token:
-            var tokenstate =
-                {
-                    mod: state.mod,
-                    idp: state.idp,
-                    uss: state.uss,
-                    at: requestAccessToken && requestAccessToken.name,
-                };
-            var encodedState = JSON.stringify(tokenstate);
+            audience = accessToken.resource;
+            scopestring = "openid profile " + accessToken.scopes.join(" ");
+            responsetype = "id_token token";
+        }
 
-            // we're just requesting an idtoken:
-            var audience: string = undefined;
-            var scopestring = "openid profile";
-            var responsetype = "id_token";
+        // make sure we're connected:
+        if (!this.isConnected())
+            this.connect();
 
-            // if a piggybacked access token is requested, update
-            // the params:
-            if (!!requestAccessToken)
+        var domain = this.options && this.options.domain;
+        var clientId = this.options && this.options.clientId && this.options.clientId.substr(8);
+        this.log.info(
+            "webauth.authorize(" +
+            "domain=" + domain + ", " +
+            "clientID=" + clientId + ", " +
+            "audience=" + audience + ", " +
+            "scope=" + scopestring + ", " +
+            "state=" + encodedState + ", " +
+            "responseType=" + responsetype + ", " +
+            "redirectUri =" + this.options.redirectUri +
+            ")");
+
+        this.webauth.authorize(
             {
-                audience = requestAccessToken.resource;
-                scopestring = "openid profile " + requestAccessToken.scopes.join(" ");
-                responsetype = "id_token token";
+                domain: this.options && this.options.domain,
+                clientID: this.options && this.options.clientId,
+                audience: audience, // 'https://api.superdup.dk'
+                scope: scopestring, //'read:boards edit:boards'
+                state: encodedState,
+                responseType: responsetype, // 'id_token token',
+                redirectUri: this.options.redirectUri,
+                nonce: nonce, //"x",
             }
-
-            // make sure we're connected:
-            if (!this.isConnected())
-                this.connect();
-
-            var domain = this.options && this.options.domain;
-            var clientId = this.options && this.options.clientId && this.options.clientId.substr(8);
-            this.log.info(
-                "webauth.authorize(" + 
-                "domain=" + domain + ", " +
-                "clientID=" + clientId + ", " +
-                "audience=" + audience + ", " +
-                "scope=" + scopestring + ", " +
-                "state=" + encodedState + ", " +
-                "responseType=" + responsetype + ", " +
-                "redirectUri =" + this.options.redirectUri +
-                ")");
-
-            this.webauth.authorize(
-                {
-                    domain: this.options && this.options.domain,
-                    clientID: this.options && this.options.clientId,
-                    audience: audience, // 'https://api.superdup.dk'
-                    scope: scopestring, //'read:boards edit:boards'
-                    state: encodedState,
-                    responseType: responsetype, // 'id_token token',
-                    redirectUri: this.options.redirectUri,
-                    nonce: "x",
-                }
-            );
-        }
-        else
-        {
-            error("Unsupported auth flow " + this.options.flow + " requested", state.uss);
-        }
-    }
-
-    private mapUser(idtoken: string, src: auth0jscode.UserInfo): sdpAuth.UserInfo
-    {
-        if (!src)
-            return null;
-
-        return {
-            uid: src.sub,
-            handle: src.nickname || src.given_name || src.name || src.family_name || src.email || src.sub,
-            givenName: src.given_name,
-            familyName: src.family_name,
-            picture: src.picture,
-            idtoken: idtoken,
-            idtokenClaims: src,
-        }
-    }
+        );
+    };
 
     public handleRedirect(
-        accessTokenName: string,
         actualRedirectUrl: string,
-        userstate: any,
-        success: (user: sdpAuth.UserInfo, accessToken: string, userstate: any) => void,
+        nonce: string,
+        accessTokenName: string,
+        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
         error: (reason: any, userstate: any) => void
-    ): void
+    ): void 
     {
-        var redirectHash: string = sdpAuth.urlparse(actualRedirectUrl).fragment;
+        var redirectHash: string = sdpAuthCore.urlparse(actualRedirectUrl).fragment;
         if (!!redirectHash && redirectHash.indexOf("!#") == 0)
             redirectHash = redirectHash.substr(2);
 
@@ -150,15 +123,21 @@ export class Auth0jsIdentityProvider implements sdpAuth.IIdentityProvider
         this.webauth.parseHash(
             {
                 hash: redirectHash,
-                nonce: "x",
+                nonce: nonce,
                 state: undefined
-            }, 
+            },
             (err: ParseHashError, data: TokenPayload) =>
             {
+                var userstate: any = undefined;
+
                 // Handle errors:
                 if (!!err)
                 {
-                    this.log.error("handleRedirect() returns error: " + JSON.stringify(error));
+                    this.log.error("handleRedirect() returns error: " + JSON.stringify(err));
+
+                    if (!!err.state)
+                        userstate = JSON.parse(err.state);
+
                     return error(err, userstate);
                 }
 
@@ -169,6 +148,8 @@ export class Auth0jsIdentityProvider implements sdpAuth.IIdentityProvider
                     this.log.error("handleRedirect(): " + msg);
                     return error(msg, userstate);
                 }
+
+                userstate = JSON.parse(data.state);
 
                 // Check to see that we got what we asked for:
                 if (!!accessTokenName) // <= ...if we asked for an access token
@@ -230,26 +211,32 @@ export class Auth0jsIdentityProvider implements sdpAuth.IIdentityProvider
                 return error(msg, userstate);
             }
         );
-    }
+    };
 
-    //private extractUser(payload: auth0.TokenPayload): sdpAuth.UserInfo
-    //{
-    //    return {
-    //        uid: payload.idToken,
-    //        handle: "",
-    //        givenName: "",
-    //        familyName:"",
-    //    };
-    //}
+    private mapUser(idtoken: string, src: auth0jscode.UserInfo): sdpAuthCore.UserInfo
+    {
+        if (!src)
+            return null;
+
+        return {
+            uid: src.sub,
+            handle: src.nickname || src.given_name || src.name || src.family_name || src.email || src.sub,
+            givenName: src.given_name,
+            familyName: src.family_name,
+            picture: src.picture,
+            idtoken: idtoken,
+            idtokenClaims: src,
+        }
+    }
 
     public acquireAccessToken(
         resource: string,
         scopes: string[],
-        refreshIfPossible: boolean,
-        success: (accessToken: string) => void,
+        success: (token: string) => void,
         error: (reason: any) => void
     ): void
     {
-        success(null);
+        error("Implicit flow does not support acquisition of additional access tokens");
     }
 }
+

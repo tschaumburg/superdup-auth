@@ -4,7 +4,7 @@ import router = require("angular-ui-router");
 import views = require("./views");
 
 export function config(
-    $stateProvider: any,
+    $stateProvider: ngui.IStateProvider,
     $urlRouterProvider: ngui.IUrlRouterProvider,
     $locationProvider: ng.ILocationProvider,
 	initialState: string = null

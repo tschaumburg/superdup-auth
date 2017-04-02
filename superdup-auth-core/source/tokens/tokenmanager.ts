@@ -9,34 +9,29 @@ export interface ITokenManager
 {
     setLog(log: ILogger): void;
 
-    registerTokenInfo(
-        pluginName: string,
-        identityProviderName: string,
+    registerTokenInfo2(
         tokenName: string,
+        loginName: string,
         resource: string,
         scopes: string[],
         protectUrls: string[]
     ): void;
 
-    lookupTokenInfo(
-        pluginName: string,
-        identityProviderName: string,
+    lookupTokenInfo2(
         tokenName: string
     ): AccessTokenInfo;
 
-    setTokenValue(
-        pluginName: string,
-        identityProviderName: string,
+    setTokenValue2(
         accessTokenName: string,
         accessTokenValue: string
     ): void;
 
-    clearTokenValues(
-        pluginName: string,
-        identityProviderName: string
+    clearTokenValues2(
+        loginName: string
     ): void;
 
-    getAccessTokens(): { [id: string]: {}; };
+    //getAccessTokens(): { [id: string]: {}; };
+    getAccessTokens(): { tokenName: string, tokenValue: string }[];
 
     getAccessTokenFor(
         url: string,
@@ -44,7 +39,7 @@ export interface ITokenManager
         error: (reason: any) => void
     ): void;
 
-    getProtectedDomains(): string[];
+    //getProtectedDomains(): string[];
 }
 
 export function createTokenManager(acquireAccessToken: acquireTokenFn, log: ILogger, tokenStore: ITokenStore = null): ITokenManager
@@ -57,17 +52,137 @@ export function createTokenManager(acquireAccessToken: acquireTokenFn, log: ILog
 
 export type acquireTokenFn =
 (
-    pluginName: string,
-    identityProviderName: string,
+    loginName: string,
     resource: string,
     scopes: string[],
     success: (token: string) => void,
     error: (reason: any) => void
 ) => void;
 
+class AccessTokenMap
+{
+    private readonly _tokensByName: { [id: string]: AccessTokenInfo; } = {};
+    private readonly _tokensByUrl: UrlDictionary<AccessTokenInfo> = new UrlDictionary<AccessTokenInfo>(); // { [id: string]: AccessTokenInfo; } = {};
+    private _allTokenInfos: AccessTokenInfo[] = null;
+
+    Add(value: AccessTokenInfo): void {
+        var key = value.tokenName;
+        this._allTokenInfos = null;
+
+        // First, we'll check to see if there's an existing
+        // registration:
+        var existingValue = this._tokensByName[key];
+        if (this.sameToken(existingValue, value)) {
+            // ...if so, we'll merge the new value into the old:
+            if (!!value.expiresAt) {
+                if ((!existingValue.expiresAt) || (existingValue.expiresAt < value.expiresAt)) {
+                    // copy in the new values - the old is empty
+                    existingValue.tokenValue = value.tokenValue;
+                    existingValue.expiresAt = value.expiresAt;
+                }
+            }
+        }
+        else {
+            // OK, no existing value:
+            this._tokensByName[key] = value;
+            for (var n in value.protectUrls) {
+                var url = value.protectUrls[n];
+                this._tokensByUrl.add(url, value);
+            }
+        }
+    }
+
+    public All(): AccessTokenInfo[]
+    {
+        if (!this._allTokenInfos) {
+            this._allTokenInfos = [];
+            for (var name in this._tokensByName) {
+                var tokenInfo = this._tokensByName[name];
+                this._allTokenInfos.push(tokenInfo);
+            }
+        }
+
+        return this._allTokenInfos;
+    }
+
+
+    public lookupTokenInfo2(tokenName: string): AccessTokenInfo
+    {
+            var key = tokenName;
+            return this._tokensByName[key];
+    }
+
+    public ByUrl(
+            url: string
+        ): AccessTokenInfo {
+        return this._tokensByUrl.find(url);
+    }
+
+    public ByLoginName(
+        loginName: string
+    ): AccessTokenInfo[] {
+        var res: AccessTokenInfo[] = [];
+        for (var name in this._tokensByName) {
+            var token = this._tokensByName[name];
+            if (token.loginName === loginName)
+                res.push(token);
+        }
+
+        return res;
+    }
+
+    private sameToken(token1: AccessTokenInfo, token2: AccessTokenInfo): boolean {
+        if (token1 == token2)
+            return true;
+
+        if (token1 == null)
+            return false;
+
+        if (token2 == null)
+            return false;
+
+        if (!(token1.tokenName === token2.tokenName))
+            return false;
+
+        if (!(token1.resource === token2.resource))
+            return false;
+
+        if (!this.sameScopes(token1.scopes, token2.scopes))
+            return false;
+
+        return true;
+    }
+
+    private sameScopes(scopes1: string[], scopes2: string[]): boolean {
+        if (scopes1 == scopes2)
+            return true;
+
+        if (scopes1 == null)
+            return false;
+
+        if (scopes2 == null)
+            return false;
+
+        if (scopes1.length != scopes2.length)
+            return false;
+
+        for (var n = 0; n < scopes1.length; n++) {
+            if (!(scopes1[n] === scopes2[n]))
+                return false;
+        }
+
+        return true;
+    }}
+
 class AccessTokenManager implements ITokenManager
 {
-    // 
+    public constructor(private readonly tokenStore: ITokenStore, private readonly acquireAccessToken: acquireTokenFn, log: ILogger)
+    {
+        this.log = log || console;
+        this.loadState();
+    }
+
+    //
     // =============
     private log: ILogger = console;
     public setLog(_log: ILogger): void
@@ -78,15 +193,90 @@ class AccessTokenManager implements ITokenManager
         this.log = _log;
     }
 
-    private readonly _tokensByName: { [id: string]: AccessTokenInfo; } = {};
-    private readonly _tokensByUrl: UrlDictionary<AccessTokenInfo> = new UrlDictionary<AccessTokenInfo>(); // { [id: string]: AccessTokenInfo; } = {};
-
-    public constructor(private readonly tokenStore: ITokenStore, private readonly acquireAccessToken: acquireTokenFn, log: ILogger)
+    // 
+    // =============
+    private readonly _tokens: AccessTokenMap = new AccessTokenMap();
+    public lookupTokenInfo2(tokenName: string): AccessTokenInfo
     {
-        this.log = log || console;
-        this.loadState();
+        return this._tokens.lookupTokenInfo2(tokenName);
     }
 
+    //private readonly _tokensByName: { [id: string]: AccessTokenInfo; } = {};
+    //private readonly _tokensByUrl: UrlDictionary<AccessTokenInfo> = new UrlDictionary<AccessTokenInfo>(); // { [id: string]: AccessTokenInfo; } = {};
+    //private _allTokenInfos: AccessTokenInfo[] = null;
+
+    //private AddTokenInfo(value: AccessTokenInfo): void
+    //{
+    //    var key = value.tokenName;
+    //    this._allTokenInfos = null;
+
+    //    // First, we'll check to see if there's an existing
+    //    // registration:
+    //    var existingValue = this._tokensByName[key];
+    //    if (this.sameToken(existingValue, value))
+    //    {
+    //        // ...if so, we'll merge the new value into the old:
+    //        if (!!value.expiresAt)
+    //        {
+    //            if ((!existingValue.expiresAt) || (existingValue.expiresAt < value.expiresAt))
+    //            {
+    //                // copy in the new values - the old is empty
+    //                existingValue.tokenValue = value.tokenValue;
+    //                existingValue.expiresAt = value.expiresAt;
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        // OK, no existing value:
+    //        this._tokensByName[key] = value;
+    //        for (var n in value.protectUrls)
+    //        {
+    //            var url = value.protectUrls[n];
+    //            this._tokensByUrl.add(url, value);
+    //        }
+    //    }
+    //}
+
+    //private AllTokenInfos(): AccessTokenInfo[]
+    //{
+    //    if (!this._allTokenInfos)
+    //    {
+    //        this._allTokenInfos = [];
+    //        for (var name in this._tokensByName)
+    //        {
+    //            var tokenInfo = this._tokensByName[name];
+    //            this._allTokenInfos.push(tokenInfo);
+    //        }
+    //    }
+
+    //    return this._allTokenInfos;
+    //}
+
+    //public lookupTokenInfo2(
+    //    tokenName: string
+    //): AccessTokenInfo 
+    //{
+    //    var key = tokenName;
+    //    return this._tokensByName[key];
+    //}
+
+    //public lookupTokenInfos2(
+    //    loginName: string
+    //): AccessTokenInfo[] 
+    //{
+    //    var res: AccessTokenInfo[] = [];
+    //    for (var name in this._tokensByName) {
+    //        var token = this._tokensByName[name];
+    //        if (token.loginName === loginName)
+    //            res.push(token);
+    //    }
+
+    //    return res;
+    //}
+
+    //
+    // =============
     private loadState()
     {
         this.log.info("Reloading persisted authentication state...");
@@ -102,8 +292,24 @@ class AccessTokenManager implements ITokenManager
 
         for (var n = 0; n < tokens.length; n++)
         {
-            this.log.debug("   ...reloaded access token " + tokens[n].tokenName + " from token storage");
-            this.saveTokenInfo(tokens[n]);
+            var tokenInfo = tokens[n];
+
+            // no value =>  don't save:
+            if (!tokenInfo.tokenValue)
+            {
+                this.log.debug("   ...skipping access token " + tokenInfo.tokenName + " (no value)");
+                continue;
+            }
+
+            // expired value =>  don't save:
+            if (isExpired(tokenInfo.expiresAt))
+            {
+                this.log.debug("   ...skipping access token " + tokenInfo.tokenName + " (expired)");
+                continue;
+            }
+
+            this.log.debug("   ...reloaded access token " + tokenInfo.tokenName + " from token storage");
+            this._tokens.Add(tokenInfo);
         }
     }
 
@@ -112,17 +318,36 @@ class AccessTokenManager implements ITokenManager
         this.log.info("Persisting authentication state...");
 
         var tokens: AccessTokenInfo[] = [];
-        for (var name in this._tokensByName)
-            tokens.push(this._tokensByName[name]);
+        //for (var name in this._tokensByName)
+        //{
+        //    var tokenInfo = this._tokensByName[name];
+        for (var tokenInfo of this._tokens.All())
+        {
+            // no value =>  don't save:
+            if (!tokenInfo.tokenValue)
+            {
+                this.log.debug("   ...skipping access token " + tokenInfo.tokenName + " (no value)");
+                continue;
+            }
+
+            // expired value =>  don't save:
+            if (isExpired(tokenInfo.expiresAt))
+            {
+                this.log.debug("   ...skipping access token " + tokenInfo.tokenName + " (expired)");
+                continue;
+            }
+
+            this.log.debug("   ...saving access token " + tokenInfo.tokenName + " to token storage");
+            tokens.push(tokenInfo);
+        }
 
         this.tokenStore.saveAll(tokens);
         this.log.info("...saved " + tokens.length + " access tokens");
     }
 
-    public registerTokenInfo(
-        pluginName: string,
-        identityProviderName: string,
+    public registerTokenInfo2(
         tokenName: string,
+        loginName: string,
         resource: string,
         scopes: string[],
         protectUrls: string[]
@@ -138,8 +363,6 @@ class AccessTokenManager implements ITokenManager
             "Registering access token \"" +
             tokenName +
             "\" (" +
-            "plugin=" + pluginName + ", " +
-            "idp=" + identityProviderName + ", " +
             "resource=" + resource + ", " +
             "scopes=" + JSON.stringify(scopes) + ", " +
             "urls=" + JSON.stringify(protectUrls) +
@@ -148,8 +371,7 @@ class AccessTokenManager implements ITokenManager
 
         var value: AccessTokenInfo =
             {
-                pluginName: pluginName,
-                identityProviderName: identityProviderName,
+                loginName: loginName,
                 tokenName: tokenName,
                 protectUrls: protectUrls,
                 resource: resource,
@@ -158,118 +380,85 @@ class AccessTokenManager implements ITokenManager
                 expiresAt: null,
             };
 
-        this.saveTokenInfo(value);
+        this._tokens.Add(value);
     }
 
-    private sameToken(token1: AccessTokenInfo, token2: AccessTokenInfo): boolean
+    //private sameToken(token1: AccessTokenInfo, token2: AccessTokenInfo): boolean
+    //{
+    //    if (token1 == token2)
+    //        return true;
+
+    //    if (token1 == null)
+    //        return false;
+
+    //    if (token2 == null)
+    //        return false;
+
+    //    if (!(token1.tokenName === token2.tokenName))
+    //        return false;
+
+    //    if (!(token1.resource === token2.resource))
+    //        return false;
+
+    //    if (!this.sameScopes(token1.scopes, token2.scopes))
+    //        return false;
+
+    //    return true;
+    //}
+
+    //private sameScopes(scopes1: string[], scopes2: string[]): boolean
+    //{
+    //    if (scopes1 == scopes2)
+    //        return true;
+
+    //    if (scopes1 == null)
+    //        return false;
+
+    //    if (scopes2 == null)
+    //        return false;
+
+    //    if (scopes1.length != scopes2.length)
+    //        return false;
+
+    //    for (var n = 0; n < scopes1.length; n++)
+    //    {
+    //        if (!(scopes1[n] === scopes2[n]))
+    //            return false;
+    //    }
+
+    //    return true;
+    //}
+
+    //public getProtectedDomains(): string[]
+    //{
+    //    return this._tokensByUrl.getHosts();
+    //}
+
+    //public getAccessTokens(): { [id: string]: {}; }
+    //{
+    //    var res: { [id: string]: {}; } = {};
+
+    //    for (var name in this._tokensByName)
+    //    {
+    //        var tokenInfo = this._tokensByName[name];
+
+    //        if (!tokenInfo)
+    //            continue;
+
+    //        var encodedToken = tokenInfo.tokenValue;
+    //        if (!encodedToken)
+    //            continue;
+
+    //        var decodedToken = jwtdecode(encodedToken);
+
+    //        res[name] = decodedToken;
+    //    }
+
+    //    return res;
+    //}
+    public getAccessTokens(): { tokenName: string, tokenValue: string }[] 
     {
-        if (token1 == token2)
-            return true;
-
-        if (token1 == null)
-            return false;
-
-        if (token2 == null)
-            return false;
-
-        if (!(token1.pluginName === token2.pluginName))
-            return false;
-
-        if (!(token1.identityProviderName === token2.identityProviderName))
-            return false;
-
-        if (!(token1.tokenName === token2.tokenName))
-            return false;
-
-        if (!(token1.resource === token2.resource))
-            return false;
-
-        if (!this.sameScopes(token1.scopes, token2.scopes))
-            return false;
-
-        return true;
-    }
-
-    private sameScopes(scopes1: string[], scopes2: string[]): boolean
-    {
-        if (scopes1 == scopes2)
-            return true;
-
-        if (scopes1 == null)
-            return false;
-
-        if (scopes2 == null)
-            return false;
-
-        if (scopes1.length != scopes2.length)
-            return false;
-
-        for (var n = 0; n < scopes1.length; n++)
-        {
-            if (!(scopes1[n] === scopes2[n]))
-                return false;
-        }
-
-        return true;
-    }
-
-    private saveTokenInfo(value: AccessTokenInfo): void
-    {
-        var key = value.pluginName + ":" + value.identityProviderName + ":" + value.tokenName;
-
-        // First, we'll check to see if there's an existing
-        // registration:
-        var existingValue = this._tokensByName[key];
-        if (this.sameToken(existingValue, value))
-        {
-            // ...if so, we'll merge the new value into the old:
-            if (!!value.expiresAt)
-            {
-                if ((!existingValue.expiresAt) || (existingValue.expiresAt < value.expiresAt))
-                {
-                    // copy in the new values - the old is empty
-                    existingValue.tokenValue = value.tokenValue;
-                    existingValue.expiresAt = value.expiresAt;
-                }
-            }
-        }
-        else
-        {
-            // OK, no existing value:
-            this._tokensByName[key] = value;
-            for (var n in value.protectUrls)
-            {
-                var url = value.protectUrls[n];
-                this._tokensByUrl.add(url, value);
-            }
-        }
-    }
-
-    public getProtectedDomains(): string[]
-    {
-        return this._tokensByUrl.getHosts();
-    }
-
-    public getAccessTokens(): { [id: string]: {}; }
-    {
-        var res: { [id: string]: {}; } = {};
-
-        for (var name in this._tokensByName)
-        {
-            var tokenInfo = this._tokensByName[name];
-            if (!tokenInfo)
-                continue;
-
-            var encodedToken = tokenInfo.tokenValue;
-            if (!encodedToken)
-                continue;
-
-            var decodedToken = jwtdecode(encodedToken);
-
-            res[name] = decodedToken;
-        }
-
-        return res;
+        return this._tokens.All().map(info => { return { tokenName: info.tokenName, tokenValue: info.tokenValue }; });
     }
 
     public getAccessTokenFor(
@@ -287,7 +476,8 @@ class AccessTokenManager implements ITokenManager
         if (!url)
             return success(null);
 
-        var info = this._tokensByUrl.find(url);
+        //var info = this._tokensByUrl.find(url);
+        var info = this._tokens.ByUrl(url);
 
         if (!info)
             return success(null);
@@ -324,8 +514,7 @@ class AccessTokenManager implements ITokenManager
     ): void
     {
         this.acquireAccessToken(
-            tokenInfo.pluginName,
-            tokenInfo.identityProviderName,
+            tokenInfo.loginName,
             tokenInfo.resource,
             tokenInfo.scopes,
             (token: string) =>
@@ -339,51 +528,21 @@ class AccessTokenManager implements ITokenManager
         );
     }
 
-    public lookupTokenInfo(
-        pluginName: string,
-        identityProviderName: string,
-        tokenName: string
-    ): AccessTokenInfo
-    {
-        var key = pluginName + ":" + identityProviderName + ":" + tokenName;
-        return this._tokensByName[key];
-    }
-
-    public lookupTokenInfos(
-        pluginName: string,
-        identityProviderName: string
-    ): AccessTokenInfo[]
-    {
-        var prefix = pluginName + ":" + identityProviderName + ":";
-
-        var res: AccessTokenInfo[] = [];
-        for (var name in this._tokensByName)
-        {
-            if (name.indexOf(prefix) == 0)
-                res.push(this._tokensByName[name]);
-        }
-
-        return res;
-    }
-
-    public setTokenValue(
-        pluginName: string,
-        identityProviderName: string,
+    public setTokenValue2(
         accessTokenName: string,
         accessTokenValue: string
     ): void
     {
-        var tokenInfo = this.lookupTokenInfo(pluginName, identityProviderName, accessTokenName);
+        var tokenInfo = this.lookupTokenInfo2(accessTokenName);
         if (!tokenInfo)
         {
-            this.log.debug("Unexpected: registering null value");
             this.log.debug("Unexpected: resolving value for unregistered access token " + accessTokenName);
             return;
         }
 
         if (!accessTokenValue)
         {
-            this.log.debug("Unexpected: resolving null value ofr access token " + accessTokenName);
+            this.log.debug("Unexpected: resolving null value for access token " + accessTokenName);
             return;
         }
 
@@ -393,12 +552,11 @@ class AccessTokenManager implements ITokenManager
         this.saveState();
     }
 
-    public clearTokenValues(
-        pluginName: string,
-        identityProviderName: string
+    public clearTokenValues2(
+        loginName: string
     ): void
     {
-        var tokenInfos = this.lookupTokenInfos(pluginName, identityProviderName);
+        var tokenInfos = this._tokens.ByLoginName(loginName);
 
         for (var n = 0; n < tokenInfos.length; n++)
         {

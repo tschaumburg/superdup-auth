@@ -5,9 +5,12 @@ import service = require('./service');
 
 export interface IAuthServiceProvider extends angular.IServiceProvider
 {
-    extractUserState(url: string): any;
     setLog(log: auth.ILogger): helpers.IConfigHelper;
-    getProtectedDomains(): string[];
+    handleRedirect(
+        url: string,
+        success: (userdata: any) => void,
+        error: (reason: string) => void
+    ): any;
 }
 
 
@@ -17,22 +20,6 @@ export class AuthServiceProvider implements IAuthServiceProvider
         private $injector: ng.auto.IInjectorService,
     )
     {
-    }
-
-    public extractUserState(url: string): any
-    {
-        var state = auth.decodeHash<{ mod: string, idp: string, at?: string, uss: any }>(url);
-        return state && state.uss;
-    }
-
-    public getProtectedDomains(): string[]
-    {
-        var res =
-            AuthServiceProvider.pluginManager
-                .tokenManager
-                .getProtectedDomains();
-
-        return res;
     }
 
     //********************************************************************
@@ -47,7 +34,7 @@ export class AuthServiceProvider implements IAuthServiceProvider
     //*    .registerAccessToken("https://admin-api.foobar.com/users", "users", ["read:users", "edit:users"])
     //*    .registerAccessToken("https://admin-api.foobar.com/log", "logs", ["view"]);
     //********************************************************************
-    private static readonly pluginManager: auth.IAuthManager = auth.getAuthManager();// config.ConfigManager = new config.ConfigManager();
+    private static readonly authManager: auth.IAuthManager = auth.getAuthManager();// config.ConfigManager = new config.ConfigManager();
     private log: auth.ILogger = console;
     public setLog(log: auth.ILogger): helpers.IConfigHelper
     {
@@ -55,9 +42,9 @@ export class AuthServiceProvider implements IAuthServiceProvider
             log = console;
 
         this.log = log;
-        AuthServiceProvider.pluginManager.setLog(log);
+        AuthServiceProvider.authManager.setLog(log);
 
-        return new helpers.ConfigHelper(AuthServiceProvider.pluginManager);
+        return new helpers.ConfigHelper(AuthServiceProvider.authManager);
     }
 
     //********************************************************************
@@ -74,9 +61,28 @@ export class AuthServiceProvider implements IAuthServiceProvider
             return new service.AuthService(
                 $injector,
                 $injector.get("$q"),
-                AuthServiceProvider.pluginManager,
+                AuthServiceProvider.authManager,
                 this.log
             );
         }];
+
+    public handleRedirect(
+        url: string,
+        success: (userdata: any) => void,
+        error: (reason: string) => void
+    ): any 
+    {
+        return AuthServiceProvider.authManager.handleRedirect(
+            url,
+            (loginName, user, state) => {
+                if (!!success)
+                    success(state);
+            },
+            (loginName, reason, state) => {
+                if (!!error)
+                    error(reason);
+            }
+        );
+    }
 }
 

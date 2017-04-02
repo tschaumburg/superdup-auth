@@ -30,22 +30,27 @@ app.config(
         //'jwtOptionsProvider',
         function (
             $urlRouterProvider: ng.ui.IUrlRouterProvider,
-            $stateProvider: any,
+            $stateProvider: ng.ui.IStateProvider,
             $locationProvider: ng.ILocationProvider,
             authProvider: auth.AuthServiceProvider
             //$httpProvider: ng.IHttpProvider,
             //jwtOptionsProvider: any,
         )
         {
-            authmodule.config(authProvider); //, $httpProvider, jwtOptionsProvider);
+            var uistate = authmodule.config(authProvider, pristineUrl) as string;
 
             // Get initial state for UI-Router:
             // ================================
-            var uistate = null;
-            console.info("pristineUrl: " + pristineUrl);
-            var redirectState = authProvider.extractUserState(pristineUrl) as { uistate?: string, custom?: any };
-            if (redirectState && redirectState.uistate)
-                uistate = redirectState.uistate;
+            //var uistate =
+            //    authmodule.handleRedirect2(
+            //        pristineUrl,
+            //        (userstate: any) => { uistate = userstate; },
+            //        (reason: string) => { /* not a redirect - which is OK */ }
+            //    ) as string;
+            //console.info("pristineUrl: " + pristineUrl);
+            //var redirectState = authProvider.extractUserState(pristineUrl) as { uistate?: string, custom?: any };
+            //if (redirectState && redirectState.uistate)
+            //    uistate = redirectState.uistate;
 
             $urlRouterProvider.otherwise(uistate || '/admin');
 
@@ -56,12 +61,25 @@ app.config(
 
 app.run(
     [
+        '$urlRouter',
+        '$state',
+        '$location',
         'superdupAuthService',
         function (
+            $urlRouterProvider: ng.ui.IUrlRouterService,
+            $stateProvider: ng.ui.IStateService,
+            $locationProvider: ng.ILocationService,
             superdupAuthService: auth.IAuthService
         )
         {
-            authmodule.run(superdupAuthService, pristineUrl);
+            
+            authmodule.run2(superdupAuthService, pristineUrl);
+                //.then(
+                //(userstate: any) =>
+                //{
+                //    $stateProvider.go('landingpage');
+                //})
+                //.catch((reason: any) => { /* not a redirect - never mind */ });
         }
     ]
 );

@@ -1,8 +1,7 @@
 ﻿export interface AccessTokenInfo
 {
-    pluginName: string;
-    identityProviderName: string;
     tokenName: string;
+    loginName: string;
     resource: string;
     scopes: string[];
     protectUrls: string[];

@@ -1,21 +1,22 @@
-﻿import { ILogger } from "../logger";
-import { UserInfo } from "../users";
+﻿import { UserInfo } from "../users";
+import { ILogger } from "../logger";
 
-export interface IIdentityProvider
+export interface Implicit<TOptions>
 {
-    setLog(log: ILogger): void;
+    initImplicit(options: TOptions, log: ILogger): void;
 
-    login(
-        state: { mod: string, idp: string, uss: any },
-        requestAccessToken: { name: string, resource: string, scopes: string[] },
+    loginImplicit(
+        nonce: string,
+        userstate: any,
+        accessToken: { name: string, resource: string, scopes: string[] },
         success: (user: UserInfo, accessToken: string, userstate: any) => void,
         error: (reason: any, userstate: any) => void
     ): void;
 
     handleRedirect(
         actualRedirectUrl: string,
+        nonce: string,
         accessTokenName: string,
-        userstate: any,
         success: (user: UserInfo, accessToken: string, userstate: any) => void,
         error: (reason: any, userstate: any) => void
     ): void;
@@ -23,8 +24,7 @@ export interface IIdentityProvider
     acquireAccessToken(
         resource: string,
         scopes: string[],
-        refreshIfPossible: boolean,
-        success: (accessToken: string) => void,
+        success: (token: string) => void,
         error: (reason: any) => void
     ): void;
 }

@@ -24,14 +24,13 @@
     <Content Include="packages.config" />
     <Content Include="tsconfig.json" />
     <Compile Include="Gruntfile.js" />
-    <TypeScriptCompile Include="source\plugins\iidentityprovider.ts" />
-    <TypeScriptCompile Include="source\plugins\index.ts" />
-    <TypeScriptCompile Include="source\plugins\iplugin.ts" />
-    <TypeScriptCompile Include="source\plugins\pluginbase.ts" />
+    <TypeScriptCompile Include="source\flows\index.ts" />
+    <TypeScriptCompile Include="source\flows\flowmanager.ts" />
+    <TypeScriptCompile Include="source\iauthmanager.ts" />
+    <TypeScriptCompile Include="source\flows\implicit.ts" />
     <TypeScriptCompile Include="source\authmanager.ts" />
-    <TypeScriptCompile Include="source\plugins\pluginmanager.ts" />
     <TypeScriptCompile Include="source\logger.ts" />
-    <TypeScriptCompile Include="source\superdup-auth-core.ts" />
+    <TypeScriptCompile Include="source\index.ts" />
     <TypeScriptCompile Include="source\tokens\index.ts" />
     <TypeScriptCompile Include="source\tokens\tokeninfo.ts" />
     <TypeScriptCompile Include="source\tokens\tokenmanager.ts" />
@@ -46,9 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source" />
+    <Folder Include="source\flows\" />
+    <Folder Include="source\tokens\datatypes\" />
     <Folder Include="source\users\" />
     <Folder Include="source\tokens\" />
-    <Folder Include="source\plugins\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
