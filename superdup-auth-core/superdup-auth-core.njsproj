@@ -24,19 +24,24 @@
     <Content Include="packages.config" />
     <Content Include="tsconfig.json" />
     <Compile Include="Gruntfile.js" />
+    <TypeScriptCompile Include="source\flows\hybridflow.ts" />
+    <TypeScriptCompile Include="source\flows\baseflow.ts" />
     <TypeScriptCompile Include="source\flows\index.ts" />
     <TypeScriptCompile Include="source\flows\flowmanager.ts" />
     <TypeScriptCompile Include="source\iauthmanager.ts" />
-    <TypeScriptCompile Include="source\flows\implicit.ts" />
+    <TypeScriptCompile Include="source\flows\implicitflow.ts" />
     <TypeScriptCompile Include="source\authmanager.ts" />
     <TypeScriptCompile Include="source\logger.ts" />
     <TypeScriptCompile Include="source\index.ts" />
+    <TypeScriptCompile Include="source\tokens\datatypes\multimap.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="source\tokens\index.ts" />
     <TypeScriptCompile Include="source\tokens\tokeninfo.ts" />
     <TypeScriptCompile Include="source\tokens\tokenmanager.ts" />
     <TypeScriptCompile Include="source\tokens\tokenstore.ts" />
     <TypeScriptCompile Include="source\tokens\tokenutils.ts" />
-    <TypeScriptCompile Include="source\tokens\urldictionary.ts" />
+    <TypeScriptCompile Include="source\tokens\datatypes\urldictionary.ts" />
     <TypeScriptCompile Include="source\urlutils.ts" />
     <TypeScriptCompile Include="source\users\index.ts" />
     <TypeScriptCompile Include="source\users\idtokenstore.ts" />

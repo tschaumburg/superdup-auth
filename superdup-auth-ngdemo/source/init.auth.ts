@@ -63,9 +63,10 @@ export function config(
     {
         authProvider
             .setLog(console)
-            .useImplicitFlow<auth0js.Auth0jsOptions>(
+            //.useImplicitFlow<auth0js.Auth0jsOptions>(
+            .useHybridFlow<auth0js.Auth0jsOptions>(
                 "newauth0",
-                auth0js.Auth0Implicit,
+                auth0js.Auth0Hybrid,
                 {
                     domain: authSecrets.auth0.domain,
                     clientId: authSecrets.auth0.clientId,

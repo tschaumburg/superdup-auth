@@ -1,6 +1,6 @@
 ﻿export { ILogger } from "./logger"; 
 
-export { Implicit } from "./flows";
+export { IBaseFlow, Implicit, Hybrid } from "./flows";
 export { IAuthManager } from "./iauthmanager"; 
 export { getAuthManager } from "./authmanager"; 
 export { UserInfo } from "./users";

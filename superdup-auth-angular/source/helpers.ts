@@ -3,6 +3,7 @@
 export interface IConfigHelper
 {
     useImplicitFlow<TOptions>(loginName: string, flow: new (args: TOptions, log: auth.ILogger) => auth.Implicit<TOptions>, flowOptions: TOptions): IFlowHelper<TOptions>;
+    useHybridFlow<TOptions>(loginName: string, flow: new (args: TOptions, log: auth.ILogger) => auth.Hybrid<TOptions>, flowOptions: TOptions): IFlowHelper<TOptions>;
 }
 
 export interface IFlowHelper<TOptions>
@@ -15,11 +16,15 @@ export class ConfigHelper implements IConfigHelper
 {
     public constructor(private readonly authManager: auth.IAuthManager) 
     {
+    } 
+
+    public useImplicitFlow<TOptions>(loginName: string, flow: new (args: TOptions, log: auth.ILogger) => auth.Implicit<TOptions>, flowOptions: TOptions): IFlowHelper<TOptions> {
+        this.authManager.registerImplicitFlow<TOptions>(loginName, flow, flowOptions);
+        return new FlowHelper<TOptions>(this.authManager, loginName);
     }
 
-    public useImplicitFlow<TOptions>(loginName: string, flow: new (args: TOptions, log: auth.ILogger) => auth.Implicit<TOptions>, flowOptions: TOptions): IFlowHelper<TOptions>
-    {
-        this.authManager.registerImplicitFlow<TOptions>(loginName, flow, flowOptions);
+    public useHybridFlow<TOptions>(loginName: string, flow: new (args: TOptions, log: auth.ILogger) => auth.Hybrid<TOptions>, flowOptions: TOptions): IFlowHelper<TOptions> {
+        this.authManager.registerHybridFlow<TOptions>(loginName, flow, flowOptions);
         return new FlowHelper<TOptions>(this.authManager, loginName);
     }
 }

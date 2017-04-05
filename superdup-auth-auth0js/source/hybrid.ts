@@ -4,17 +4,17 @@ import auth0jscode = require("auth0-js");
 import { Auth0jsOptions, AuthFlow } from "./options";
 import jwt_decode = require("jwt-decode");
 
-export class Auth0Implicit implements sdpAuthCore.Implicit<Auth0jsOptions>
+export class Auth0Hybrid implements sdpAuthCore.Hybrid<Auth0jsOptions>
 {
     private log: sdpAuthCore.ILogger = console;
     private webauth: WebAuth;
 
     public constructor(private readonly options: Auth0jsOptions, log: sdpAuthCore.ILogger)
     {
-        this.initImplicit(options, log);
+        this.initHybrid(options, log);
     }
 
-    public initImplicit(options: Auth0jsOptions, log: sdpAuthCore.ILogger): void
+    public initHybrid(options: Auth0jsOptions, log: sdpAuthCore.ILogger): void
     {
         if (!log)
             log = console;
@@ -50,20 +50,12 @@ export class Auth0Implicit implements sdpAuthCore.Implicit<Auth0jsOptions>
         error: (reason: any, userstate: any) => void
     ): void
     {
-        //// update the state with the name of any requested access token:
-        //var tokenstate =
-        //    {
-        //        mod: state.mod,
-        //        idp: state.idp,
-        //        uss: state.uss,
-        //        at: accessToken && accessToken.name,
-        //    };
-        var encodedState = JSON.stringify(userstate);//(tokenstate);
+        var encodedState = JSON.stringify(userstate);
 
         // we're just requesting an idtoken:
         var audience: string = undefined;
         var scopestring = "openid profile";
-        var responsetype = "id_token";
+        var responsetype = "code id_token";
 
         // if a piggybacked access token is requested, update
         // the params:
@@ -71,7 +63,7 @@ export class Auth0Implicit implements sdpAuthCore.Implicit<Auth0jsOptions>
         {
             audience = accessToken.resource;
             scopestring = "openid profile " + accessToken.scopes.join(" ");
-            responsetype = "id_token token";
+            responsetype = "code id_token token";
         }
 
         // make sure we're connected:
@@ -128,6 +120,7 @@ export class Auth0Implicit implements sdpAuthCore.Implicit<Auth0jsOptions>
             },
             (err: ParseHashError, data: TokenPayload) =>
             {
+                this.log.trace("callback(data=" + JSON.stringify(data) + ")");
                 var userstate: any = undefined;
 
                 // Handle errors:
@@ -227,6 +220,16 @@ export class Auth0Implicit implements sdpAuthCore.Implicit<Auth0jsOptions>
             idtoken: idtoken,
             idtokenClaims: src,
         }
+    }
+
+    public acquireAccessToken(
+        resource: string,
+        scopes: string[],
+        success: (token: string) => void,
+        error: (reason: any) => void
+    ): void
+    {
+        error("Implicit flow does not support acquisition of additional access tokens");
     }
 }
 

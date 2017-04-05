@@ -1,11 +1,8 @@
 ﻿import { UserInfo } from "../users";
 import { ILogger } from "../logger";
 
-export interface Implicit<TOptions>
-{
-    initImplicit(options: TOptions, log: ILogger): void;
-
-    loginImplicit(
+export interface IBaseFlow {
+    login(
         nonce: string,
         userstate: any,
         accessToken: { name: string, resource: string, scopes: string[] },
@@ -20,11 +17,14 @@ export interface Implicit<TOptions>
         success: (user: UserInfo, accessToken: string, userstate: any) => void,
         error: (reason: any, userstate: any) => void
     ): void;
+}
 
+export interface IThreeLegggedFlow extends IBaseFlow
+{
     acquireAccessToken(
         resource: string,
         scopes: string[],
-        success: (token: string) => void,
+        success: (accessToken: string) => void,
         error: (reason: any) => void
     ): void;
 }

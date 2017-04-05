@@ -1,5 +1,7 @@
 ﻿import logging = require("../logger");
-import { Implicit } from "./implicit";
+import { Implicit } from "./implicitflow";
+import { Hybrid } from "./hybridflow";
+import { IBaseFlow } from "./baseflow";
 
 export function createFlowManager(): IFlowManager
 {
@@ -16,15 +18,15 @@ export interface IFlowManager
     //* 
     //* 
     //********************************************************************
-    //registerPlugin<TOptions>(pluginName: string, plugin: IPlugin<TOptions>): void;
     registerImplicitFlow<TOptions>(loginName: string, creator: (log: logging.ILogger) => Implicit<TOptions>): void;
-    findFlow<TOptions>(name: string): Implicit<TOptions>;
+    registerHybridFlow<TOptions>(loginName: string, creator: (log: logging.ILogger) => Hybrid<TOptions>): void;
+    findFlow<TOptions>(name: string): IBaseFlow;
 }
 
 interface FlowInfo
 {
-    creator: (log: logging.ILogger) => Object; //Implicit<TOptions>;
-    flow: Object;
+    creator: (log: logging.ILogger) => IBaseFlow; //Implicit<TOptions>;
+    flow: IBaseFlow;
 }
 
 class FlowManager implements IFlowManager
@@ -63,8 +65,7 @@ class FlowManager implements IFlowManager
     public registerImplicitFlow<TOptions>(
         loginName: string,
         creator: (log: logging.ILogger) => Implicit<TOptions>
-    ): void 
-    {
+    ): void {
         this.log.debug("Registering authentication flow \"" + loginName + "\"");
 
         this._flows[loginName] = { creator: creator, flow: null };
@@ -79,7 +80,17 @@ class FlowManager implements IFlowManager
         //}
     }
 
-    public findFlow<TOptions>(name: string): Implicit<TOptions>
+    public registerHybridFlow<TOptions>(
+        loginName: string,
+        creator: (log: logging.ILogger) => Hybrid<TOptions>
+    ): void 
+    {
+        this.log.debug("Registering hybrid flow \"" + loginName + "\"");
+
+        this._flows[loginName] = { creator: creator, flow: null };
+    }
+
+    public findFlow<TOptions>(name: string): IBaseFlow
     {
         var info = this._flows[name];
         if (!info)
@@ -90,27 +101,4 @@ class FlowManager implements IFlowManager
 
         return info.flow as Implicit<TOptions>;
     }
-
-    //********************************************************************
-    //* IdentityProviders:
-    //* ==================
-    //* 
-    //* 
-    //********************************************************************
-
-    //public registerIdentityProvider<TOptions>(
-    //    pluginName: string,
-    //    identityProviderName: string,
-    //    providerOptions: TOptions): void
-    //{
-    //    var plugin = this.findPlugin<TOptions>(pluginName);
-    //    if (!plugin)
-    //    {
-    //        var msg = "Plugin " + pluginName + " has not been properly registered";
-    //        this.log.error(msg);
-    //        throw new Error(msg);
-    //    }
-
-    //    plugin.registerIdentityProvider(identityProviderName, providerOptions);
-    //}
 }

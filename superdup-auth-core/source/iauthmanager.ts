@@ -2,7 +2,7 @@
 import { UserInfo, IUserManager, createUserManager } from "./users";
 //import { IPlugin, IPluginManager, createPluginManager } from "./plugins";
 import { ITokenManager, createTokenManager, decodeHash } from "./tokens";
-import { Implicit, IFlowManager, createFlowManager } from "./flows";
+import { Implicit, Hybrid, IFlowManager, createFlowManager } from "./flows";
 
 export interface IAuthManager
 {
@@ -20,13 +20,19 @@ export interface IAuthManager
     //********************************************************************
     readonly flowManager: IFlowManager;
 
-    registerImplicitFlow<TOptions>(//, TFlow extends Implicit<TOptions>>(
+    registerImplicitFlow<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => Implicit<TOptions>,
         flowOptions: TOptions
     ): void;
 
-    login2(
+    registerHybridFlow<TOptions>(
+        loginName: string,
+        flow: new (args: TOptions, log: ILogger) => Hybrid<TOptions>,
+        flowOptions: TOptions
+    ): void;
+
+    login(
         loginName: string,
         accessTokenName: string,
         userstate: any,

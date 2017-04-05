@@ -4,7 +4,7 @@ import { UserInfo, IUserManager, createUserManager } from "./users";
 import { ITokenManager, createTokenManager, decodeHash } from "./tokens";
 import { IAuthManager } from "./iauthmanager";
 
-import { Implicit, IFlowManager, createFlowManager } from "./flows";
+import { IThreeLegggedFlow, Implicit, Hybrid, IFlowManager, createFlowManager } from "./flows";
 import { decodeNonce } from "./tokens";
 
 var _authManager: IAuthManager = null;
@@ -31,15 +31,25 @@ class AuthManager implements IAuthManager
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => Implicit<TOptions>,
         flowOptions: TOptions
-    ): void 
-    { 
+    ): void {
         this.flowManager.registerImplicitFlow(
             loginName,
             (log: ILogger) => { return new flow(flowOptions, log); }
         );
     }
 
-    public login2(
+    public registerHybridFlow<TOptions>(//, TFlow extends Implicit<TOptions>>(
+        loginName: string,
+        flow: new (args: TOptions, log: ILogger) => Hybrid<TOptions>,
+        flowOptions: TOptions
+    ): void {
+        this.flowManager.registerHybridFlow(
+            loginName,
+            (log: ILogger) => { return new flow(flowOptions, log); }
+        );
+    }
+
+    public login(
         loginName: string,
         accessTokenName: string,
         userstate: any,
@@ -69,7 +79,7 @@ class AuthManager implements IAuthManager
 
         if (!!accessTokenName)
         {
-            var regInfo = this.tokenManager.lookupTokenInfo2(accessTokenName);
+            var regInfo = this.tokenManager.findByTokenName(accessTokenName);
             if (!!regInfo)
                 tokeninfo = { name: regInfo.tokenName, resource: regInfo.resource, scopes: regInfo.scopes };
         }
@@ -77,7 +87,7 @@ class AuthManager implements IAuthManager
         var nonce: string = this.makeNonce(); // this.createNonce(loginName, accessTokenName);
 
         this.log.info("login(loginName=" + loginName + ", nonce=" + nonce + ", token=" + JSON.stringify(tokeninfo) + ")");
-        flow.loginImplicit(
+        flow.login(
             nonce,
             { flow: loginName, at: accessTokenName, nonce: nonce, uss: userstate }, //userstate,
             tokeninfo,
@@ -224,7 +234,11 @@ class AuthManager implements IAuthManager
         if (!flow)
             return error("Could not find login \"" + loginName + "\"");
 
-        flow.acquireAccessToken(resource, scopes, success, error);
+        var tlf = flow as IThreeLegggedFlow;
+        if (!tlf || !tlf.acquireAccessToken)
+            return error("Flow \"" + loginName + "\" does not support token acquisition after login");
+
+        tlf.acquireAccessToken(resource, scopes, success, error);
     }
 
     //

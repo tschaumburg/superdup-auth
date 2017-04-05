@@ -58,7 +58,7 @@ export class AuthService implements IAuthService
     {
         var deferred = this.$q.defer<void>();
 
-        this.authManager.login2(
+        this.authManager.login(
             loginName,
             accessTokenName,
             userstate,

@@ -1,4 +1,4 @@
-﻿var urlutils = require("../urlutils");
+﻿var urlutils = require("../../urlutils");
 
 export class UrlDictionary<TValue>
 {
