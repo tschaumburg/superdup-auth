@@ -1,13 +1,18 @@
 ﻿import { ILogger } from "../logger";
 import { ILogin } from "./ilogin";
 import { IImplicitBuilder } from "./iimplicit";
-import { IImplicitProvider } from "../providers";
+import { IHybridBuilder } from "./ihybrid";
+import { IImplicitProvider, IHybridProvider } from "../providers";
 
 export interface IBuilderManager
 {
     useImplicitFlow<TOptions>(
         flow: new (args: TOptions, log: ILogger) => IImplicitProvider
     ): IImplicitBuilder<TOptions>;
+
+    useHybridFlow<TOptions>(
+        flow: new (args: TOptions, log: ILogger) => IHybridProvider
+    ): IHybridBuilder<TOptions>;
 
     getLoginNames(): string[];
     getLogin(loginName: string): ILogin;

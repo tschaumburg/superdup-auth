@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ee8bf1eb-d012-4a4c-97b2-234f1e992d6a}</ProjectGuid>
     <ProjectHome />
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <StartupFile>Gruntfile.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -24,9 +24,11 @@
     <Content Include="packages.config" />
     <Content Include="tsconfig.json" />
     <Compile Include="Gruntfile.js" />
+    <TypeScriptCompile Include="source\builders\ihybrid.ts" />
     <TypeScriptCompile Include="source\builders\iimplicit.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="source\builders\impl\hybrid.ts" />
     <TypeScriptCompile Include="source\builders\impl\implicit.ts" />
     <TypeScriptCompile Include="source\builders\impl\index.ts" />
     <TypeScriptCompile Include="source\builders\index.ts" />

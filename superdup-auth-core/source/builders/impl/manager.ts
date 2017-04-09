@@ -1,19 +1,32 @@
 ﻿import { ILogger } from "../../logger";
 import { ILogin } from "../ilogin";
+import { IBuilderManager, IInternalBuilderManager } from "../imanager";
+import { ILoginManager } from "../../iloginmanager";
+
+import { ImplicitBuilder } from "./implicit";
 import { IImplicitBuilder } from "../iimplicit";
 import { IImplicitProvider } from "../../providers";
-import { IBuilderManager, IInternalBuilderManager } from "../imanager";
-import { ImplicitBuilder } from "./implicit";
-import { ILoginManager } from "../../iloginmanager";
+
+import { HybridBuilder } from "./hybrid";
+import { IHybridBuilder } from "../ihybrid";
+import { IHybridProvider } from "../../providers";
 
 class BuilderManager implements IInternalBuilderManager
 {
     constructor(private readonly loginManager: ILoginManager) { }
+
     public useImplicitFlow<TOptions>(
         flow: new (args: TOptions, log: ILogger) => IImplicitProvider
     ): ImplicitBuilder<TOptions>
     {
         return new ImplicitBuilder<TOptions>(this, this.loginManager, flow);
+    }
+
+    public useHybridFlow<TOptions>(
+        flow: new (args: TOptions, log: ILogger) => IHybridProvider
+    ): HybridBuilder<TOptions>
+    {
+        return new HybridBuilder<TOptions>(this, this.loginManager, flow);
     }
 
     private readonly _logins: { [id: string]: ILogin; } = {};

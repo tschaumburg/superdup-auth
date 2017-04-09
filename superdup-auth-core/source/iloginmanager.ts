@@ -21,9 +21,8 @@ export interface ILoginManager
     registerHybridProvider<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => IHybridProvider,
-        flowOptions: TOptions,
-        log: ILogger
-    ): void;
+        flowOptions: TOptions
+    ): ILogger;
 
     registerAccessToken(
         tokenName: string,

@@ -108,7 +108,7 @@ export class LoginManager implements ILoginManager
     //* 
     //* 
     //********************************************************************
-    public registerImplicitProvider<TOptions>(//, TFlow extends IImplicitProvider<TOptions>>(
+    public registerImplicitProvider<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => IImplicitProvider,
         flowOptions: TOptions
@@ -125,23 +125,21 @@ export class LoginManager implements ILoginManager
         return flowlog;
     }
 
-    public registerHybridProvider<TOptions>(//, TFlow extends IImplicitProvider<TOptions>>(
+    public registerHybridProvider<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => IHybridProvider,
-        flowOptions: TOptions,
-        flowlog: ILogger
-    ): void 
+        flowOptions: TOptions
+    ): ILogger 
     {
-        if (!flowlog)
-            flowlog = this.log.sublog(loginName);
-        if (!flowlog.sublog)
-            flowlog = new ConsoleLogger(flowlog, "XXXX");
+        var flowlog = this.log.sublog(loginName);
 
         this.flowManager.registerHybridProvider(
             loginName,
             () => { return new flow(flowOptions, flowlog); },
             this.log
         );
+
+        return flowlog;
     }
 
     //********************************************************************
