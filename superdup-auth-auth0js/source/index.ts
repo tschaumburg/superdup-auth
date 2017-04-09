@@ -1,4 +1,3 @@
-﻿import { Auth0jsOptions, AuthFlow } from "./options";
-export { Auth0jsOptions, AuthFlow };
-export * from "./implicit";
-export * from "./hybrid";
+﻿export { Auth0jsOptions, AuthFlow } from "./options";
+export {Auth0Implicit } from "./implicit";
+export { Auth0Hybrid } from "./hybrid";

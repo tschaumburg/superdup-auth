@@ -4,17 +4,12 @@ import auth0jscode = require("auth0-js");
 import { Auth0jsOptions, AuthFlow } from "./options";
 import jwt_decode = require("jwt-decode");
 
-export class Auth0Hybrid implements sdpAuthCore.Hybrid<Auth0jsOptions>
+export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
 {
     private log: sdpAuthCore.ILogger = console;
     private webauth: WebAuth;
 
     public constructor(private readonly options: Auth0jsOptions, log: sdpAuthCore.ILogger)
-    {
-        this.initHybrid(options, log);
-    }
-
-    public initHybrid(options: Auth0jsOptions, log: sdpAuthCore.ILogger): void
     {
         if (!log)
             log = console;
@@ -229,7 +224,7 @@ export class Auth0Hybrid implements sdpAuthCore.Hybrid<Auth0jsOptions>
         error: (reason: any) => void
     ): void
     {
-        error("Implicit flow does not support acquisition of additional access tokens");
+        error("IImplicitProvider flow does not support acquisition of additional access tokens");
     }
 }
 

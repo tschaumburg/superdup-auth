@@ -3,6 +3,7 @@ import auth = require("superdup-auth-angular");
 import auth0js = require("superdup-auth-auth0js");
 var authSecrets = require("./auth-secrets.json");
 
+import { IAuthServiceProvider } from "superdup-auth-angular";
 //export function config(
 //    authProvider: auth.AuthServiceProvider
 //)
@@ -56,17 +57,16 @@ var authSecrets = require("./auth-secrets.json");
 //}
 
 export function config(
-    authProvider: auth.AuthServiceProvider,
+    authProvider: IAuthServiceProvider,
     url: string
 ): any
 {
     {
         authProvider
-            .setLog(console)
-            //.useImplicitFlow<auth0js.Auth0jsOptions>(
-            .useHybridFlow<auth0js.Auth0jsOptions>(
-                "newauth0",
-                auth0js.Auth0Hybrid,
+            .initLog(console)
+            .builder
+            .useImplicitFlow<auth0js.Auth0jsOptions>(auth0js.Auth0Implicit)
+            .withParameters(
                 {
                     domain: authSecrets.auth0.domain,
                     clientId: authSecrets.auth0.clientId,
@@ -74,6 +74,7 @@ export function config(
                     flow: auth0js.AuthFlow.implicit,
                 }
             )
+
             //.accessToken(
             //    "superdupApi",
             //    "https://api.superdup.dk",
@@ -86,7 +87,7 @@ export function config(
             //        "https://api.superdup.dk/boards/long"
             //    ]
             //)
-            .accessToken(
+            .providingAccessToken(
                 "localSuperdupApi",
                 "https://localhost/SuperDup.API",
                 [
@@ -106,6 +107,7 @@ export function config(
             //    ]
             //)
             //.setDefault("auth0js", "auth0", "localSuperdupApi")
+            .registerAs("newauth0")
             ;
 
         return authProvider.handleRedirect(url, null, null);

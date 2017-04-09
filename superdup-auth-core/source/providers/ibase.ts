@@ -1,7 +1,7 @@
-﻿import { UserInfo } from "../users";
+﻿import { UserInfo } from "../userinfo";
 import { ILogger } from "../logger";
 
-export interface IBaseFlow {
+export interface IBaseProvider {
     login(
         nonce: string,
         userstate: any,
@@ -19,7 +19,7 @@ export interface IBaseFlow {
     ): void;
 }
 
-export interface IThreeLegggedFlow extends IBaseFlow
+export interface IThreeLegggedFlow extends IBaseProvider
 {
     acquireAccessToken(
         resource: string,

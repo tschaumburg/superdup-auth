@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ee8bf1eb-d012-4a4c-97b2-234f1e992d6a}</ProjectGuid>
     <ProjectHome />
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
     <StartupFile>Gruntfile.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -24,36 +24,55 @@
     <Content Include="packages.config" />
     <Content Include="tsconfig.json" />
     <Compile Include="Gruntfile.js" />
-    <TypeScriptCompile Include="source\flows\hybridflow.ts" />
-    <TypeScriptCompile Include="source\flows\baseflow.ts" />
-    <TypeScriptCompile Include="source\flows\index.ts" />
-    <TypeScriptCompile Include="source\flows\flowmanager.ts" />
-    <TypeScriptCompile Include="source\iauthmanager.ts" />
-    <TypeScriptCompile Include="source\flows\implicitflow.ts" />
-    <TypeScriptCompile Include="source\authmanager.ts" />
-    <TypeScriptCompile Include="source\logger.ts" />
-    <TypeScriptCompile Include="source\index.ts" />
-    <TypeScriptCompile Include="source\tokens\datatypes\multimap.ts">
+    <TypeScriptCompile Include="source\builders\iimplicit.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="source\tokens\index.ts" />
-    <TypeScriptCompile Include="source\tokens\tokeninfo.ts" />
-    <TypeScriptCompile Include="source\tokens\tokenmanager.ts" />
-    <TypeScriptCompile Include="source\tokens\tokenstore.ts" />
-    <TypeScriptCompile Include="source\tokens\tokenutils.ts" />
-    <TypeScriptCompile Include="source\tokens\datatypes\urldictionary.ts" />
-    <TypeScriptCompile Include="source\urlutils.ts" />
-    <TypeScriptCompile Include="source\users\index.ts" />
-    <TypeScriptCompile Include="source\users\idtokenstore.ts" />
-    <TypeScriptCompile Include="source\users\userinfo.ts" />
-    <TypeScriptCompile Include="source\users\usermanager.ts" />
+    <TypeScriptCompile Include="source\builders\impl\implicit.ts" />
+    <TypeScriptCompile Include="source\builders\impl\index.ts" />
+    <TypeScriptCompile Include="source\builders\index.ts" />
+    <TypeScriptCompile Include="source\builders\imanager.ts" />
+    <TypeScriptCompile Include="source\builders\ilogin.ts" />
+    <TypeScriptCompile Include="source\builders\impl\manager.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="source\impl\datastore\datastore.ts" />
+    <TypeScriptCompile Include="source\impl\datastore\index.ts" />
+    <TypeScriptCompile Include="source\impl\datastore\istorage.ts" />
+    <TypeScriptCompile Include="source\impl\index.ts" />
+    <TypeScriptCompile Include="source\providers\ihybrid.ts" />
+    <TypeScriptCompile Include="source\providers\ibase.ts" />
+    <TypeScriptCompile Include="source\providers\impl\index.ts" />
+    <TypeScriptCompile Include="source\providers\impl\manager.ts" />
+    <TypeScriptCompile Include="source\providers\index.ts" />
+    <TypeScriptCompile Include="source\providers\imanager.ts" />
+    <TypeScriptCompile Include="source\iloginmanager.ts" />
+    <TypeScriptCompile Include="source\providers\iimplicit.ts" />
+    <TypeScriptCompile Include="source\impl\loginmanager.ts" />
+    <TypeScriptCompile Include="source\logger.ts" />
+    <TypeScriptCompile Include="source\index.ts" />
+    <TypeScriptCompile Include="source\builders\impl\login.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="source\impl\tokens\index.ts" />
+    <TypeScriptCompile Include="source\impl\tokens\tokeninfo.ts" />
+    <TypeScriptCompile Include="source\impl\tokens\tokenmanager.ts" />
+    <TypeScriptCompile Include="source\impl\tokens\tokenstore.ts" />
+    <TypeScriptCompile Include="source\impl\tokens\tokenutils.ts" />
+    <TypeScriptCompile Include="source\impl\urlmapper\index.ts" />
+    <TypeScriptCompile Include="source\impl\urlmapper\urlmapper.ts" />
+    <TypeScriptCompile Include="source\impl\urlutils.ts" />
+    <TypeScriptCompile Include="source\userinfo.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source" />
-    <Folder Include="source\flows\" />
-    <Folder Include="source\tokens\datatypes\" />
-    <Folder Include="source\users\" />
-    <Folder Include="source\tokens\" />
+    <Folder Include="source\builders\impl\" />
+    <Folder Include="source\impl\datastore\" />
+    <Folder Include="source\impl\" />
+    <Folder Include="source\providers\impl\" />
+    <Folder Include="source\impl\urlmapper\" />
+    <Folder Include="source\providers\" />
+    <Folder Include="source\builders\" />
+    <Folder Include="source\impl\tokens\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

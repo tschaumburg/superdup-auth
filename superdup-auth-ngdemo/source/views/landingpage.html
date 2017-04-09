@@ -2,23 +2,23 @@
     <div>
         Hello
         <span ng-hide="ctrl.isLoggedIn()">Anonymous</span>
-        <span ng-show="ctrl.isLoggedIn()">{{auth.user.handle}}</span>
+        <span ng-show="ctrl.isLoggedIn()">{{ctrl.user.handle}}</span>
     </div>
     <div>
         <p></p>
         <table>
             <tr>
                 <td colspan="2" align="center">
-                    <img src="{{auth.user.picture}}" height="128" />
+                    <img src="{{ctrl.user.picture}}" height="128" />
                 </td>
             </tr>
             <tr>
-                <td colspan="2" align="center">{{auth.user.handle}}</td>
+                <td colspan="2" align="center">{{ctrl.user.handle}}</td>
             </tr>
             <tr>
                 <td colspan="2" align="center"><b>id_token</b></td>
             </tr>
-            <tr ng-repeat="(key, value) in auth.user.idtokenClaims">
+            <tr ng-repeat="(key, value) in ctrl.user.idtokenClaims">
                 <td>{{key}}</td>
                 <td>{{value}}</td>
             </tr>

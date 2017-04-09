@@ -4,17 +4,12 @@ import auth0jscode = require("auth0-js");
 import { Auth0jsOptions, AuthFlow } from "./options";
 import jwt_decode = require("jwt-decode");
 
-export class Auth0Implicit implements sdpAuthCore.Implicit<Auth0jsOptions>
+export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
 {
     private log: sdpAuthCore.ILogger = console;
     private webauth: WebAuth;
 
     public constructor(private readonly options: Auth0jsOptions, log: sdpAuthCore.ILogger)
-    {
-        this.initImplicit(options, log);
-    }
-
-    public initImplicit(options: Auth0jsOptions, log: sdpAuthCore.ILogger): void
     {
         if (!log)
             log = console;

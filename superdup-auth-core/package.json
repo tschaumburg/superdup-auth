@@ -1,6 +1,6 @@
 {
     "name": "superdup-auth-core",
-    "version": "0.0.1-build.195",
+    "version": "0.0.1-build.293",
     "description": ".",
     "main": "dist/index.js",
     "types": "dist/index",

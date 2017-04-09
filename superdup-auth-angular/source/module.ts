@@ -31,7 +31,7 @@ angular.module('superdup.auth')
 
             var promise =
                 superdupAuthService
-                    .getAccessTokenFor(config.url)
+                    .resolveAccessToken(config.url)
                     .then((token: string) => 
                     {
                         if (!!token)

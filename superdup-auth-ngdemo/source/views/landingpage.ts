@@ -1,9 +1,11 @@
-﻿import auth = require("superdup-auth-angular");
+﻿import authcore = require("superdup-auth-core");
+import auth = require("superdup-auth-angular");
 import jwtdecode = require("jwt-decode");
 
 class LandingPageController
 {
     public tokens: { tokenName: string, tokenValue: {} }[] = [];
+    public user: authcore.UserInfo;
     public constructor(
         private $scope: any,
         private authService: auth.IAuthService
@@ -19,18 +21,30 @@ class LandingPageController
     {
         var self = this;
         this.authService
-            .login2("newauth0", "localSuperdupApi", "/landingpage" )
-            .then(
-                () =>
+            .getLogin("newauth0")
+            .login(
+                "localSuperdupApi",
+                "/landingpage",
+                (user, state) => 
                 {
                     this.updateTokens();
+                },
+                (reason) =>
+                {
                 }
             );
+            //.login("newauth0", "localSuperdupApi", "/landingpage" )
+            //.then(
+            //    () =>
+            //    {
+            //        this.updateTokens();
+            //    }
+            //);
     }
 
     public logout(): void
     {
-        this.authService.logout2("newauth0");
+        this.authService.logout("newauth0");
         this.updateTokens();
     }
 
@@ -39,7 +53,10 @@ class LandingPageController
         if (!this.authService)
             return false;
 
-        if (!this.authService.user)
+        if (!this.authService.getLogin("newauth0"))
+            return false;
+
+        if (!this.authService.getLogin("newauth0").user)
             return false;
 
         return true;
@@ -47,15 +64,17 @@ class LandingPageController
 
     private updateTokens(): void
     {
+        this.user = this.authService.getLogin("newauth0").user;
         this.tokens = [];
-        var encoded = this.authService.getAccessTokens();
-        for (var enc of encoded)
+
+        var names = this.authService.getLogin("newauth0").getTokenNames();
+        for (var name of names)
         {
-            if (!enc.tokenValue)
+            var value = this.authService.getLogin("newauth0").getTokenValue(name);
+            if (!value)
                 continue;
 
-            var decoded = { tokenName: enc.tokenName, tokenValue: jwtdecode(enc.tokenValue) };
-            console.log("   ..." + decoded.tokenName + " => " + JSON.stringify(decoded.tokenValue));
+            var decoded = { tokenName: name, tokenValue: jwtdecode(value) };
             this.tokens.push(decoded);
         }
     }
