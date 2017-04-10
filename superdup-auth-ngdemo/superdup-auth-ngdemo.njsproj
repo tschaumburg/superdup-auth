@@ -43,9 +43,6 @@
     <Content Include="source\index.html">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="source\init.uirouter.ts">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="tsconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -55,7 +52,10 @@
     <TypeScriptCompile Include="source\init.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="source\init.auth.ts" />
+    <TypeScriptCompile Include="source\init.auth.ts">
+      <DependentUpon>source\init.ts</DependentUpon>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="source\init.uirouter.ts" />
     <TypeScriptCompile Include="source\views\index.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

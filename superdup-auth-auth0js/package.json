@@ -1,6 +1,6 @@
 {
   "name": "superdup-auth-auth0js",
-  "version": "0.0.2-build.174",
+  "version": "0.0.2-build.175",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index",

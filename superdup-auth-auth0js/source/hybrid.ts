@@ -49,7 +49,7 @@ export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
 
         // we're just requesting an idtoken:
         var audience: string = undefined;
-        var scopestring = "openid profile";
+        var scopestring = "openid profile offline_access";
         var responsetype = "code id_token";
 
         // if a piggybacked access token is requested, update

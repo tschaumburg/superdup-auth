@@ -22,6 +22,11 @@
     <Content Include=".gitignore" />
     <Content Include="package.json" />
     <Content Include="packages.config" />
+    <Content Include="source\providers\flows.html">
+      <SubType>Content</SubType>
+      <DependentUpon>source\providers\flows.md</DependentUpon>
+    </Content>
+    <Content Include="source\providers\flows.md" />
     <Content Include="tsconfig.json" />
     <Compile Include="Gruntfile.js" />
     <TypeScriptCompile Include="source\builders\ihybrid.ts" />
