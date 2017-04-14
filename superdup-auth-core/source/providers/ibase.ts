@@ -13,7 +13,6 @@ export interface IBaseProvider {
     handleRedirect(
         actualRedirectUrl: string,
         nonce: string,
-        accessTokenName: string,
         success: (user: UserInfo, accessToken: string, userstate: any) => void,
         error: (reason: any, userstate: any) => void
     ): void;

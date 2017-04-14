@@ -17,7 +17,7 @@
     "http-server": "^0.9.0",
     "jwt-decode": "^2.2.0",
     "superdup-auth-angular": "^0.0.5-build.0",
-    "superdup-auth-auth0js": "^0.0.2-build.6",
+    "superdup-auth-auth0js": "^0.0.3-build.6",
     "superdup-auth-core": "^0.0.1-build.40"
   },
   "devDependencies": {

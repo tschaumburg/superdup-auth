@@ -35,9 +35,11 @@
     <Content Include=".gitignore" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="source\implicit.ts" />
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="src\" />
     <Folder Include="source\" />
     <Folder Include="oldcode\" />
   </ItemGroup>
@@ -48,15 +50,19 @@
     <TypeScriptCompile Include="oldcode\superdup-auth2-oidc.ts" />
     <TypeScriptCompile Include="oldcode\superdup-auth2-service.ts" />
     <TypeScriptCompile Include="oldcode\superdup-auth2-utils.ts" />
-    <TypeScriptCompile Include="source\browserinfo.ts">
+    <TypeScriptCompile Include="source\options.ts" />
+    <TypeScriptCompile Include="src\browserinfo.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="source\identityprovider.ts" />
-    <TypeScriptCompile Include="source\idtoken.ts" />
-    <TypeScriptCompile Include="source\options.ts">
+    <TypeScriptCompile Include="src\identityprovider.ts" />
+    <TypeScriptCompile Include="src\idtoken.ts" />
+    <TypeScriptCompile Include="src\options.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="source\plugin.ts" />
+    <TypeScriptCompile Include="src\plugin.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gruntfile.js" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

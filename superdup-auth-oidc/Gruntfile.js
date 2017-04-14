@@ -1,16 +1,15 @@
-﻿/// <binding AfterBuild='postbuild' Clean='cleanup' />
+﻿/// <binding BeforeBuild='prebuild' AfterBuild='postbuild' />
 var path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-module.exports = function (grunt) {
+
+module.exports = function (grunt)
+{
     //Add all plugins that your project needs here
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-publish');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-webpack');
     grunt.loadNpmTasks('grunt-npm-command');
-
-    //configs = require('load-grunt-configs')(grunt, { config: { src: "grunt/*.js" } });
-    //grunt.initConfig(configs);
 
     grunt.initConfig({
         clean: {
@@ -19,13 +18,17 @@ module.exports = function (grunt) {
         },
         webpack: {
             options: {
-                entry: './dist/index.js'
+                entry: './dist/index.js',
+                externals: {
+                    'superdup-auth-core': 'sdpAuthCore',
+                    'auth0-js': 'auth'
+                }
             },
             prod: {
                 output: {
                     path: path.resolve(__dirname, './dist'),
-                    filename: 'superdup-auth-core-min.js',
-                    library: 'sdpAuthCore'
+                    filename: 'superdup-auth-auth0js-min.js',
+                    library: 'sdpAuthAuth0js'
                 },
                 plugins: [
                     new UglifyJSPlugin()
@@ -34,9 +37,17 @@ module.exports = function (grunt) {
             debug: {
                 output: {
                     path: path.resolve(__dirname, './dist'),
-                    filename: 'superdup-auth-core.js',
-                    //library: 'sdpAuthCore',
+                    filename: 'superdup-auth-auth0js.js',
+                    library: 'sdpAuthAuth0js',
                     libraryTarget: 'commonjs'
+                }
+            }
+        },
+        'npm-command': {
+            'update-core': {
+                options: {
+                    cmd: 'update',
+                    args: ['superdup-auth-core']
                 }
             }
         },
@@ -45,14 +56,8 @@ module.exports = function (grunt) {
                 files: ['package.json'],
                 updateConfigs: [],
                 commit: false,
-                //commitMessage: 'Release v%VERSION%',
-                //commitFiles: ['package.json'],
                 createTag: false,
-                //tagName: 'v%VERSION%',
-                //tagMessage: 'Version %VERSION%',
                 push: false,
-                //pushTo: 'upstream',
-                //gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
                 globalReplace: false,
                 prereleaseName: 'build', //false,
                 metadata: '',
@@ -68,13 +73,12 @@ module.exports = function (grunt) {
         }
     });
 
-    //grunt.registerTask('bundle', ['uglify:minify', 'uglify:beautify']);
     grunt.registerTask('cleanup', ['clean:build']);
     grunt.registerTask(
         'prebuild',
         [
             // Make sure all needed packages are loaded
-            //'npm-install'
+            'npm-command:update-core'
         ]
     );
     grunt.registerTask(
@@ -87,4 +91,4 @@ module.exports = function (grunt) {
             'publish'
         ]
     );
-};
+}

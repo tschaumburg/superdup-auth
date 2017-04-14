@@ -71,6 +71,7 @@
     <TypeScriptCompile Include="source\userinfo.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="grunt\" />
     <Folder Include="source" />
     <Folder Include="source\builders\impl\" />
     <Folder Include="source\impl\datastore\" />

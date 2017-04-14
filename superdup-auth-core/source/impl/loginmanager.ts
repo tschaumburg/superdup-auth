@@ -262,9 +262,19 @@ export class LoginManager implements ILoginManager
         flow.handleRedirect(
             url,
             nonce,
-            accessTokenName,
             (user, accessToken, state) =>
             {
+                // Check to see that we got what we asked for:
+                if (!!accessTokenName) // <= ...if we asked for an access token
+                {
+                    if (!accessToken) // <= ... but did't get one
+                    {
+                        var msg = "login \"" + loginName + "\"did not return the requested access token \"" + accessTokenName + "\"";
+                        this.log.error("handleRedirect(): " + msg);
+                        return error(loginName, msg, userstate);
+                    }
+                }
+
                 sublog.info("handleRedirect(): successful redirect processed");
                 var sanitizedAccessToken = accessToken && accessToken.substr(0, accessToken.length / 2);
                 var sanitizedIdtoken = user.idtoken && user.idtoken.substr(0, user.idtoken.length / 2);

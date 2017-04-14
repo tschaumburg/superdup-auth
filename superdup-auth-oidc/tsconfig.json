@@ -10,7 +10,7 @@
         "rootDir": "source",
         "outDir": "dist",
         "declarationDir": "dist",
-        "traceResolution": true,
+        "traceResolution": false,
         "moduleResolution": "node",
         "declaration": true
     }, 
@@ -19,9 +19,11 @@
         "dist",
         "build",
         "platforms",
+        "oldcode",
+        "src",
         "www",
         "bower_components",
         "node_modules",
-        "oldcode"
+        "../node_modules"
     ]
 }

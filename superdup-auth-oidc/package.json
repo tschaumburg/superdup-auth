@@ -1,17 +1,17 @@
 {
-  "name": "superdup-auth-oidc",
-  "version": "0.0.1-build.3",
-  "description": "",
-  "main": "dist/superdup-auth-oidc.js",
-  "types": "dist/superdup-auth-oidc",
-  "files": [
-    "dist/"
-  ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Thomas Schaumburg",
-  "license": "ISC",
+    "name": "superdup-auth-oidc",
+    "version": "0.0.1-build.3",
+    "description": "",
+    "main": "dist/superdup-auth-oidc.js",
+    "types": "dist/superdup-auth-oidc",
+    "files": [
+        "dist/"
+    ],
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Thomas Schaumburg",
+    "license": "ISC",
     "dependencies": {
         "babel-polyfill": "^6.23.0",
         "jwt-decode": "^2.1.0",
@@ -30,6 +30,9 @@
         "grunt-contrib-uglify": "^2.0.0",
         "grunt-npm-command": "^0.1.2",
         "grunt-publish": "^1.0.0",
-        "typescript": "^2.1.5"
+        "grunt-webpack": "^2.0.1",
+        "typescript": "^2.1.5",
+        "uglifyjs-webpack-plugin": "^0.4.2",
+        "webpack": "^2.3.3"
     }
 }

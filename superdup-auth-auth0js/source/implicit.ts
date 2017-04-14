@@ -103,7 +103,6 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
     public handleRedirect(
         actualRedirectUrl: string,
         nonce: string,
-        accessTokenName: string,
         success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
         error: (reason: any, userstate: any) => void
     ): void 
@@ -145,17 +144,6 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
                 }
 
                 userstate = JSON.parse(data.state);
-
-                // Check to see that we got what we asked for:
-                if (!!accessTokenName) // <= ...if we asked for an access token
-                {
-                    if (!data.accessToken) // <= ... but did't get one
-                    {
-                        var msg = "Auth0.WebAuth.parseHash() did not return the requested access token \"" + accessTokenName + "\"";
-                        this.log.error("handleRedirect(): " + msg);
-                        return error(msg, userstate);
-                    }
-                }
 
                 // If there's an idtoken and we can decode it...we're done
                 if (!!data.idToken)
