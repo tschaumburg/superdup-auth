@@ -40,32 +40,32 @@ module.exports = function (grunt) {
                 }
             }
         },
-        bump: {
-            options: {
-                files: ['package.json'],
-                updateConfigs: [],
-                commit: false,
-                //commitMessage: 'Release v%VERSION%',
-                //commitFiles: ['package.json'],
-                createTag: false,
-                //tagName: 'v%VERSION%',
-                //tagMessage: 'Version %VERSION%',
-                push: false,
-                //pushTo: 'upstream',
-                //gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
-                globalReplace: false,
-                prereleaseName: 'build', //false,
-                metadata: '',
-                regExp: false
-            }
-        },
-        publish: {
-            main: {
-                src: [
-                    '.'
-                ]
-            }
-        }
+        //bump: {
+        //    options: {
+        //        files: ['package.json'],
+        //        updateConfigs: [],
+        //        commit: false,
+        //        //commitMessage: 'Release v%VERSION%',
+        //        //commitFiles: ['package.json'],
+        //        createTag: false,
+        //        //tagName: 'v%VERSION%',
+        //        //tagMessage: 'Version %VERSION%',
+        //        push: false,
+        //        //pushTo: 'upstream',
+        //        //gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+        //        globalReplace: false,
+        //        prereleaseName: 'build', //false,
+        //        metadata: '',
+        //        regExp: false
+        //    }
+        //},
+        //publish: {
+        //    main: {
+        //        src: [
+        //            '.'
+        //        ]
+        //    }
+        //}
     });
 
     //grunt.registerTask('bundle', ['uglify:minify', 'uglify:beautify']);
@@ -81,10 +81,8 @@ module.exports = function (grunt) {
         'postbuild',
         [
             'webpack:debug',
-            // Increase npm version 1.2.3-build.12 => 1.2.3-build.13
-            'bump:prerelease',
-            // Publish to npm
-            'publish'
+            //'bump:prerelease',
+            //'publish'
         ]
     );
 };

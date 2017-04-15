@@ -103,8 +103,8 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
     public handleRedirect(
         actualRedirectUrl: string,
         nonce: string,
-        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
-        error: (reason: any, userstate: any) => void
+        success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        error: (reason: any) => void
     ): void 
     {
         var redirectHash: string = sdpAuthCore.urlparse(actualRedirectUrl).fragment;
@@ -122,17 +122,12 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
             },
             (err: ParseHashError, data: TokenPayload) =>
             {
-                var userstate: any = undefined;
-
                 // Handle errors:
                 if (!!err)
                 {
                     this.log.error("handleRedirect() returns error: " + JSON.stringify(err));
 
-                    if (!!err.state)
-                        userstate = JSON.parse(err.state);
-
-                    return error(err, userstate);
+                    return error(err);
                 }
 
                 // Handle missing results:
@@ -140,10 +135,8 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
                 {
                     var msg = "Auth0.WebAuth.parseHash() returned neither error nor data";
                     this.log.error("handleRedirect(): " + msg);
-                    return error(msg, userstate);
+                    return error(msg);
                 }
-
-                userstate = JSON.parse(data.state);
 
                 // If there's an idtoken and we can decode it...we're done
                 if (!!data.idToken)
@@ -153,11 +146,11 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
                     {
                         var msg = "idtoken " + data.idToken + "could not be decoded";
                         this.log.error("handleRedirect(): " + msg);
-                        return error(msg, userstate);
+                        return error(msg);
                     }
 
                     this.log.info("handleRedirect(): idtoken " + JSON.stringify(userinfo));
-                    return success(this.mapUser(data.idToken, userinfo as auth0jscode.UserInfo), data.accessToken, userstate);
+                    return success(this.mapUser(data.idToken, userinfo as auth0jscode.UserInfo), data.accessToken);
                 }
 
                 // as a last resort, try getting userinfo from the auth0 server
@@ -173,25 +166,25 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
                             {
                                 var msg = "userInfo() returned error " + JSON.stringify(err);
                                 this.log.error("handleRedirect(): " + msg);
-                                return error(err, userstate);
+                                return error(err);
                             }
 
                             if (!user)
                             {
                                 var msg = "userInfo() returned neither result nor error";
                                 this.log.error("handleRedirect(): " + msg);
-                                return error("No user returned", userstate);
+                                return error("No user returned");
                             }
 
                             this.log.debug("userInfo() returns " + JSON.stringify(user));
-                            return success(this.mapUser(data.idToken, user), data.accessToken, userstate);
+                            return success(this.mapUser(data.idToken, user), data.accessToken);
                         }
                     );
                 }
 
                 var msg = "Auth0.WebAuth.parseHash() returned neither idtoken nor accesstoken";
                 this.log.error("handleRedirect(): " + msg);
-                return error(msg, userstate);
+                return error(msg);
             }
         );
     };

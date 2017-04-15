@@ -50,8 +50,8 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
         nonce: string,
         userstate: any,
         accessToken: { name: string, resource: string, scopes: string[] },
-        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
-        error: (reason: any, userstate: any) => void
+        success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        error: (reason: any) => void
     ): void
     {
         var encodedState = JSON.stringify(userstate);//(tokenstate);
@@ -89,8 +89,8 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
         scope: string,
         responseType: string,
         userstate: any,
-        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
-        error: (reason: any, userstate: any) => void
+        success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        error: (reason: any) => void
     ): void 
     {
         this.log.trace('Calling signinPopup()');
@@ -122,12 +122,12 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
             {
                 //this.superdupLoggingService.username = self.username;
                 self.log.trace('signingPopup() succeeded');
-                success(this.mapUser(user), null, userstate);
+                success(this.mapUser(user), null);
             })
             .catch(function (reason: any)
             {
                 self.log.info('signinPopup() failed: ' + JSON.stringify(reason));
-                error(reason, userstate);
+                error(reason);
             });
     }
 
@@ -136,8 +136,8 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
         scope: string,
         responseType: string,
         userstate: any,
-        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
-        error: (reason: any, userstate: any) => void
+        success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        error: (reason: any) => void
     ): void 
     {
             this.log.trace('Calling signinRedirect()');
@@ -169,40 +169,40 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
                 {
                     //this.superdupLoggingService.username = self.username;
                     self.log.trace('signinRedirect() request sent - result will be returned in an HTTPS 302 (redirect)');
-                    success(null, null, userstate);
+                    success(null, null);
                 })
                 .catch(function (reason: any)
                 {
                     self.log.info('signinRedirect() failed: ' + JSON.stringify(reason));
-                    error(reason, userstate);
+                    error(reason);
                 });
         }
 
     public handleRedirect(
         nonce: string,
         actualRedirectUrl: string,
-        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
-        error: (reason: any, userstate: any) => void
+        success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        error: (reason: any) => void
     ): void 
     {
         var self = this;
         this.manager
             .signinRedirectCallback(actualRedirectUrl)
             .then((result: Oidc.User) => { self.handleLoginResult(result, success, error); })
-            .catch((reason: any) => { error(reason, null); });
+            .catch((reason: any) => { error(reason); });
     };
 
     private handleLoginResult(
         loginResult: Oidc.User,
-        success: (user: sdpAuthCore.UserInfo, accessToken: string, userstate: any) => void,
-        error: (reason: any, userstate: any) => void
+        success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        error: (reason: any) => void
     ): void 
     {
         if (!loginResult)
         {
             var msg = "";
             this.log.error(msg);
-            error(msg, null);
+            error(msg);
         }
 
         var encodedstate = loginResult.state as string;
@@ -210,7 +210,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
         {
             var msg = "";
             this.log.error(msg);
-            error(msg, null);
+            error(msg);
         }
 
         var state = JSON.parse(encodedstate) as { mod: string; idp: string; at: string; uss: any; };
@@ -218,7 +218,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
         {
             var msg = "";
             this.log.error(msg);
-            error(msg, null);
+            error(msg);
         }
 
         // If there's an idtoken and we can decode it...we're done
@@ -235,7 +235,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
             //}
 
             this.log.info("handleRedirect(): idtoken " + JSON.stringify(idtoken_claims));
-            return success(this.mapUser(loginResult), loginResult.access_token, loginResult.state);
+            return success(this.mapUser(loginResult), loginResult.access_token);
         }
     }
 

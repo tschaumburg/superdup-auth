@@ -1,40 +1,40 @@
 {
-    "name": "superdup-auth-angular",
-    "version": "0.0.5-build.200",
-    "description": "",
-    "main": "dist/superdup-auth-angular.js",
-    "types": "dist/index",
-    "files": [
-        "dist/"
-    ],
+  "name": "superdup-auth-angular",
+  "version": "0.0.5-build.200",
+  "description": "",
+  "main": "dist/superdup-auth-angular.js",
+  "types": "dist/index",
+  "files": [
+    "dist/"
+  ],
     "dependencies": {
         "@types/node": "^7.0.2",
-        "angular": "^1.6.1",
-        "superdup-auth-core": "^0.0.1-build.33"
+        "superdup-auth-core": "*",
+        "angular": "^1.6.1"
     },
-    "devDependencies": {
-        "@types/angular": "^1.6.2",
-        "@types/node": "^7.0.1",
-        "babel": "^6.5.2",
-        "babel-preset-es2015": "^6.22.0",
-        "babel-preset-stage-2": "^6.22.0",
-        "grunt": "^1.0.1",
-        "grunt-browserify": "^5.0.0",
-        "grunt-bump": "^0.8.0",
-        "grunt-cli": "^1.2.0",
-        "grunt-contrib-clean": "^1.0.0",
-        "grunt-contrib-uglify": "^2.0.0",
-        "grunt-npm-command": "^0.1.2",
-        "grunt-publish": "^1.0.0",
-        "grunt-webpack": "^2.0.1",
-        "tsify": "^3.0.0",
-        "typescript": "^2.1.5",
-        "uglifyjs-webpack-plugin": "^0.4.2",
-        "webpack": "^2.3.3"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Thomas Schaumburg",
-    "license": "ISC"
+  "devDependencies": {
+    "@types/angular": "^1.6.2",
+    "@types/node": "^7.0.1",
+    "babel": "^6.5.2",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-stage-2": "^6.22.0",
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-bump": "^0.8.0",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-npm-command": "^0.1.2",
+    "grunt-publish": "^1.0.0",
+    "grunt-webpack": "^2.0.1",
+    "tsify": "^3.0.0",
+    "typescript": "^2.1.5",
+    "uglifyjs-webpack-plugin": "^0.4.2",
+    "webpack": "^2.3.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thomas Schaumburg",
+  "license": "ISC"
 }

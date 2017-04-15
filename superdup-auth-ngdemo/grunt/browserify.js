@@ -32,7 +32,7 @@ module.exports.tasks = {
             src: ['build/**/*.js'],
             entry: 'build/index.js',
             dest: 'www/app-browserify.js',
-            reference: ['superdup-auth-core', 'superdup-auth-angular'],
+            reference: ['superdup-auth-core', 'superdup-auth-angular', 'superdup-auth-auth0js'],
             //reference: [
             //    'angular-jwt',
             //    'superdup-auth',

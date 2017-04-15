@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "superdup-auth-core", "superdup-auth-core\superdup-auth-core.njsproj", "{EE8BF1EB-D012-4A4C-97B2-234F1E992D6A}"
 EndProject
@@ -16,6 +16,9 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "superdup-auth-auth0js", "su
 	EndProjectSection
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "superdup-auth-oidc", "superdup-auth-oidc\superdup-auth-oidc.njsproj", "{ADA1D536-0178-4D8F-8B79-9861C3CE66BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE8BF1EB-D012-4A4C-97B2-234F1E992D6A} = {EE8BF1EB-D012-4A4C-97B2-234F1E992D6A}
+	EndProjectSection
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "superdup-auth-ngdemo", "superdup-auth-ngdemo\superdup-auth-ngdemo.njsproj", "{E67B2BB4-6BB8-4EFE-8171-37D5AB8CDAD5}"
 	ProjectSection(ProjectDependencies) = postProject

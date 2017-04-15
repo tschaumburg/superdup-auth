@@ -191,14 +191,17 @@ export class LoginManager implements ILoginManager
             nonce,
             { flow: loginName, at: accessTokenName, nonce: nonce, uss: userstate }, //userstate,
             tokeninfo,
-            (user, accessTokenValue, userstate) =>
+            (user, accessTokenValue) =>
             {
                 log.info("Login succeeeded!");
                 this.tokenManager.setValue(accessTokenName, accessTokenValue, log);
                 this._userManager.set(loginName, user);
                 success(user, userstate);
             },
-            error
+            (reason) =>
+            {
+                error(reason, userstate);
+            }
         );
     }
 
@@ -262,7 +265,7 @@ export class LoginManager implements ILoginManager
         flow.handleRedirect(
             url,
             nonce,
-            (user, accessToken, state) =>
+            (user, accessToken) =>
             {
                 // Check to see that we got what we asked for:
                 if (!!accessTokenName) // <= ...if we asked for an access token
@@ -285,7 +288,7 @@ export class LoginManager implements ILoginManager
                 this._userManager.set(loginName, user);
                 success(loginName, user, userstate);
             },
-            (reason, userstate) => { error(loginName, reason, userstate); }
+            (reason) => { error(loginName, reason, userstate); }
         );
 
         return userstate;

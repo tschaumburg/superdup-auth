@@ -43,52 +43,52 @@ module.exports = function (grunt)
                 }
             }
         },
-        'npm-command': {
-            'update-core': {
-                options: {
-                    cmd: 'update',
-                    args: ['superdup-auth-core']
-                }
-            }
-        },
-        bump: {
-            options: {
-                files: ['package.json'],
-                updateConfigs: [],
-                commit: false,
-                createTag: false,
-                push: false,
-                globalReplace: false,
-                prereleaseName: 'build', //false,
-                metadata: '',
-                regExp: false
-            }
-        },
-        publish: {
-            main: {
-                src: [
-                    '.'
-                ]
-            }
-        }
+        //'npm-command': {
+        //    'update-core': {
+        //        options: {
+        //            cmd: 'update',
+        //            args: ['superdup-auth-core']
+        //        }
+        //    }
+        //},
+        //bump: {
+        //    options: {
+        //        files: ['package.json'],
+        //        updateConfigs: [],
+        //        commit: false,
+        //        createTag: false,
+        //        push: false,
+        //        globalReplace: false,
+        //        prereleaseName: 'build', //false,
+        //        metadata: '',
+        //        regExp: false
+        //    }
+        //},
+        //publish: {
+        //    main: {
+        //        src: [
+        //            '.'
+        //        ]
+        //    }
+        //}
     });
 
     grunt.registerTask('cleanup', ['clean:build']);
     grunt.registerTask(
         'prebuild',
         [
-            // Make sure all needed packages are loaded
-            'npm-command:update-core'
+            //// Make sure all needed packages are loaded
+            //'npm-command:update-core'
         ]
     );
     grunt.registerTask(
         'postbuild',
         [
             'webpack:debug',
-            // Increase npm version 1.2.3-build.12 => 1.2.3-build.13
-            'bump:prerelease',
-            // Publish to npm
-            'publish'
+            //// Increase npm version 1.2.3-build.12 => 1.2.3-build.13
+            //'bump:prerelease',
+            //// Publish to npm
+            //'publish'
         ]
     );
 }

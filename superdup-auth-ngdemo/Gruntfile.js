@@ -1,4 +1,4 @@
-/// <binding BeforeBuild='clean:build, prebuild' AfterBuild='postbuild' />
+/// <binding BeforeBuild='prebuild' AfterBuild='postbuild' />
 module.exports = function (grunt) {
     //Add all plugins that your project needs here
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -15,8 +15,8 @@ module.exports = function (grunt) {
     grunt.registerTask(
         'prebuild',
         [
-            // Make sure all needed packages are loaded
-            'npm-command:update-auth'
+            //// Make sure all needed packages are loaded
+            //'npm-command:update-auth'
         ]
     );
     grunt.registerTask('postbuild', ['copy:json', 'browserify:bundle', 'copy:html', 'copy:javascript', 'copy:images', 'cssmin:all'] );

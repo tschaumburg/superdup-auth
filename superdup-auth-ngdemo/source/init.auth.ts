@@ -65,8 +65,8 @@ export function config(
         authProvider
             .initLog(console)
             .builder
-            .useHybridFlow<auth0js.Auth0jsOptions>(auth0js.Auth0Hybrid)
-            //.useImplicitFlow<auth0js.Auth0jsOptions>(auth0js.Auth0Implicit)
+            //.useHybridFlow<auth0js.Auth0jsOptions>(auth0js.Auth0Hybrid)
+            .useImplicitFlow<auth0js.Auth0jsOptions>(auth0js.Auth0Implicit)
             .withParameters(
                 {
                     domain: authSecrets.auth0.domain,
