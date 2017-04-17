@@ -1,18 +1,26 @@
-﻿import { UserInfo } from "../../userinfo";
+﻿import { UserInfo } from "../userinfo";
 import { ILogin } from "../ilogin";
-import { ILogger } from "../../logger";
-import { ILoginManager } from "../../iloginmanager";
+import { ILogger } from "../logger";
+import { ILoginManager } from "../iloginmanager";
 
 export class Login implements ILogin {
     constructor(private readonly manager: ILoginManager, private readonly log: ILogger, private readonly name: string) { }
 
     public login(
-        accessTokenName: string,
         userstate: any,
-        success: (user: UserInfo, userstate: any) => void,
-        error: (reason: any, userstate: any) => void
-    ): void {
-        this.manager.login(this.name, accessTokenName, userstate, success, error, this.log);
+        success: () => void,
+        redirecting: () => void,
+        error: (reason: any) => void
+    ): void 
+    {
+        this.manager.login(
+            this.name,
+            userstate,
+            success,
+            redirecting,
+            error,
+            this.log
+        );
     }
 
     public get user(): UserInfo {

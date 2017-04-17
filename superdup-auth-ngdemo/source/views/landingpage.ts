@@ -23,11 +23,14 @@ class LandingPageController
         this.authService
             .getLogin("newauth0")
             .login(
-                "localSuperdupApi",
+                //"localSuperdupApi",
                 "/landingpage",
-                (user, state) => 
+                () => 
                 {
                     this.updateTokens();
+                },
+                () =>
+                {
                 },
                 (reason) =>
                 {

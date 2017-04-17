@@ -1,5 +1,5 @@
 ﻿import { ILogger } from "../../logger";
-import { ILogin } from "../ilogin";
+import { ILogin } from "../../ilogin";
 import { IBuilderManager, IInternalBuilderManager } from "../imanager";
 import { ILoginManager } from "../../iloginmanager";
 

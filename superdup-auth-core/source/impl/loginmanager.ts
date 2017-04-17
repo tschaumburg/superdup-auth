@@ -1,4 +1,6 @@
 ﻿import { ILogger, ConsoleLogger } from "../logger";
+import { ILogin } from "../ilogin";
+import { Login } from "./login";
 import { UserInfo } from "../userinfo";
 import { DataStore, LocalStorageStore } from "./datastore";
 import { ITokenManager, createTokenManager, decodeHash, decodeNonce } from "./tokens";
@@ -58,9 +60,9 @@ export class LoginManager implements ILoginManager
     private readonly _tokenManager: ITokenManager;
     public get tokenManager() { return this._tokenManager; }
 
-    public registerAccessToken(
-        tokenName: string,
+    private registerAccessToken2(
         loginName: string,
+        tokenName: string,
         resource: string,
         scopes: string[],
         protectUrls: string[]
@@ -111,35 +113,50 @@ export class LoginManager implements ILoginManager
     public registerImplicitProvider<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => IImplicitProvider,
-        flowOptions: TOptions
-    ): ILogger 
+        flowOptions: TOptions,
+        requestAccessToken: { name: string, resource: string, scopes: string[], protectUrls: string[] }
+    ): ILogin
     {
         var flowlog = this.log.sublog(loginName);
 
         this.flowManager.registerImplicitProvider(
             loginName,
             () => { return new flow(flowOptions, flowlog); },
+            requestAccessToken,
             this.log
         );
 
-        return flowlog;
+        this.registerAccessToken2(loginName, requestAccessToken.name, requestAccessToken.resource, requestAccessToken.scopes, requestAccessToken.protectUrls);
+
+        var login = new Login(this, flowlog, loginName);
+        return login;
     }
 
     public registerHybridProvider<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => IHybridProvider,
-        flowOptions: TOptions
-    ): ILogger 
+        flowOptions: TOptions,
+        requestAccessToken: { name: string, resource: string, scopes: string[], protectUrls: string[] },
+        additionalAccessTokens: { name: string, resource: string, scopes: string[], protectUrls: string[] }[],
+        requestRefreshToken: boolean
+    ): ILogin 
     {
         var flowlog = this.log.sublog(loginName);
 
         this.flowManager.registerHybridProvider(
             loginName,
             () => { return new flow(flowOptions, flowlog); },
+            requestAccessToken,
+            requestRefreshToken,
             this.log
         );
 
-        return flowlog;
+        this.registerAccessToken2(loginName, requestAccessToken.name, requestAccessToken.resource, requestAccessToken.scopes, requestAccessToken.protectUrls);
+        for (var token of additionalAccessTokens)
+            this.registerAccessToken2(loginName, token.name, token.resource, token.scopes, token.protectUrls);
+
+        var login = new Login(this, flowlog, loginName);
+        return login;
     }
 
     //********************************************************************
@@ -150,57 +167,48 @@ export class LoginManager implements ILoginManager
     //********************************************************************
     public login(
         loginName: string,
-        accessTokenName: string,
         userstate: any,
-        success: (user: UserInfo, userstate: any) => void,
-        error: (reason: any, userstate: any) => void,
+        success: () => void,
+        redirecting: () => void,
+        error: (reason: any) => void,
         log: ILogger
     ): void 
     {
-        log.info("login(loginName=" + loginName + ", accessTokenName=" + accessTokenName + ")");
+        log.info("login(loginName=" + loginName + ")");
 
         if (!loginName)
         {
-            var msg = "login(): loginName must be specified - either explicitly or implicitly through setDefaultProvider()";
+            var msg = "login(): loginName must be specified";
             log.error(msg);
-            return error(msg, userstate);
+            return error(msg);
         }
 
-        var flow = this.flowManager.findProvider(loginName);
-
-        if (!flow)
+        var provider = this.flowManager.findProvider(loginName);
+        if (!provider)
         {
             var msg = "No login named " + loginName + " has been registered";
             log.error(msg);
-            return error(msg, userstate);;
-        }
-
-        var tokeninfo: { name: string, resource: string, scopes: string[] } = null;
-
-        if (!!accessTokenName)
-        {
-            var regInfo = this.tokenManager.findInfo(accessTokenName, log);
-            if (!!regInfo)
-                tokeninfo = { name: regInfo.tokenName, resource: regInfo.resource, scopes: regInfo.scopes };
+            return error(msg);;
         }
 
         var nonce: string = this.makeNonce(); // this.createNonce(loginName, accessTokenName);
+        var encodedState = JSON.stringify({ flow: loginName, nonce: nonce, uss: userstate });
 
-        log.info("login(loginName=" + loginName + ", nonce=" + nonce + ", token=" + JSON.stringify(tokeninfo) + ")");
-        flow.login(
+        log.info("login(loginName=" + loginName + ", nonce=" + nonce + /*", token=" + JSON.stringify(tokeninfo) +*/ ")");
+        provider.login(
             nonce,
-            { flow: loginName, at: accessTokenName, nonce: nonce, uss: userstate }, //userstate,
-            tokeninfo,
-            (user, accessTokenValue) =>
+            encodedState,
+            (user, accessTokenName, accessTokenValue) =>
             {
                 log.info("Login succeeeded!");
                 this.tokenManager.setValue(accessTokenName, accessTokenValue, log);
                 this._userManager.set(loginName, user);
-                success(user, userstate);
+                success();
             },
+            redirecting,
             (reason) =>
             {
-                error(reason, userstate);
+                error(reason);
             }
         );
     }
@@ -226,6 +234,7 @@ export class LoginManager implements ILoginManager
     public handleRedirect(
         url: string,
         success: (loginName: string, user: UserInfo, userstate: any) => void,
+        noRedirect: () => void,
         error: (loginName: string, reason: any, userstate: any) => void
     ): any 
     {
@@ -236,17 +245,17 @@ export class LoginManager implements ILoginManager
 
         // First sneak-peek at the '...#state=...' fragment of the URL,
         // to see if this is a recognizable redirect:
-        var state = decodeHash<{ flow: string, at?: string, nonce?: string, uss: any }>(url);
+        var state = decodeHash<{ flow: string, nonce?: string, uss: any }>(url);
         if (!state)
         {
             var msg = "Not a redirect url";
             sublog.debug("handleRedirect(): ...not a redirect");
-            error(null, msg, undefined);
+            noRedirect();
             return null;
         }
 
         var loginName = state.flow;
-        var accessTokenName = state.at;
+        //var accessTokenName = state.at;
         var userstate = state.uss;
         var nonce = state.nonce;
 
@@ -259,13 +268,13 @@ export class LoginManager implements ILoginManager
             return null;
         }
 
-        var requestedAccessTokenName = accessTokenName;
+        //var requestedAccessTokenName = accessTokenName;
         sublog.debug("handleRedirect() => " + loginName + ".handleRedirect()");
 
         flow.handleRedirect(
             url,
             nonce,
-            (user, accessToken) =>
+            (user, accessTokenName, accessToken) =>
             {
                 // Check to see that we got what we asked for:
                 if (!!accessTokenName) // <= ...if we asked for an access token
@@ -283,8 +292,8 @@ export class LoginManager implements ILoginManager
                 var sanitizedIdtoken = user.idtoken && user.idtoken.substr(0, user.idtoken.length / 2);
                 sublog.debug("handleRedirect(): Saving tokens");
                 sublog.debug("handleRedirect():    idtoken = " + sanitizedIdtoken);
-                sublog.debug("handleRedirect():    " + requestedAccessTokenName + " = " + sanitizedAccessToken);
-                this.tokenManager.setValue(requestedAccessTokenName, accessToken, sublog);
+                sublog.debug("handleRedirect():    " + accessTokenName + " = " + sanitizedAccessToken);
+                this.tokenManager.setValue(accessTokenName, accessToken, sublog);
                 this._userManager.set(loginName, user);
                 success(loginName, user, userstate);
             },
@@ -316,6 +325,8 @@ export class LoginManager implements ILoginManager
             throw new Error(msg);
         }
 
+        flow.logout();
+
         this.tokenManager.clearValues(loginName, log);
         this._userManager.clear(loginName);
     }
@@ -338,11 +349,11 @@ export class LoginManager implements ILoginManager
         if (!flow)
             return error("Could not find login \"" + loginName + "\"");
 
-        var tlf = flow as IThreeLegggedFlow;
-        if (!tlf || !tlf.acquireAccessToken)
-            return error("Flow \"" + loginName + "\" does not support token acquisition after login");
+        //var tlf = flow as IThreeLegggedFlow;
+        //if (!tlf || !tlf.acquireAccessToken)
+        //    return error("Flow \"" + loginName + "\" does not support token acquisition after login");
 
-        tlf.acquireAccessToken(resource, scopes, success, error);
+        flow.acquireAccessToken(resource, scopes, success, error);
     }
 
     //

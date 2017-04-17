@@ -118,6 +118,7 @@ export class AuthServiceProvider implements IAuthServiceProvider
                 if (!!success)
                     success(state);
             },
+            () => { },
             (loginName, reason, state) =>
             {
                 if (!!error)

@@ -1,5 +1,6 @@
 ﻿import { ILogger } from "./logger";
-import { UserInfo} from "./userinfo";
+import { ILogin } from "./ilogin";
+import { UserInfo } from "./userinfo";
 //import { ITokenManager, createTokenManager, decodeHash } from "./tokens";
 import { IImplicitProvider, IHybridProvider, IProviderManager } from "./providers";
 //import { IImplicitBuilder } from "./builders";
@@ -7,7 +8,7 @@ import { IImplicitProvider, IHybridProvider, IProviderManager } from "./provider
 export interface ILoginManager
 {
     //********************************************************************
-    //* :
+    //* Logins:
     //* ===================
     //* 
     //* 
@@ -15,22 +16,25 @@ export interface ILoginManager
     registerImplicitProvider<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => IImplicitProvider,
-        flowOptions: TOptions
-    ): ILogger;
+        flowOptions: TOptions,
+        initialAccessToken: { name: string, resource: string, scopes: string[], protectUrls: string[] }
+    ): ILogin;
 
     registerHybridProvider<TOptions>(
         loginName: string,
         flow: new (args: TOptions, log: ILogger) => IHybridProvider,
-        flowOptions: TOptions
-    ): ILogger;
+        flowOptions: TOptions,
+        initialAccessToken: { name: string, resource: string, scopes: string[], protectUrls: string[] },
+        additionalAccessTokens: { name: string, resource: string, scopes: string[], protectUrls: string[] }[],
+        requestRefreshToken: boolean
+    ): ILogin;
 
-    registerAccessToken(
-        tokenName: string,
-        loginName: string,
-        resource: string,
-        scopes: string[],
-        protectUrls: string[]
-    ): void;
+    //registerAccessToken(
+    //    tokenName: string,
+    //    resource: string,
+    //    scopes: string[],
+    //    protectUrls: string[]
+    //): void;
 
     //********************************************************************
     //* :
@@ -40,16 +44,17 @@ export interface ILoginManager
     //********************************************************************
     login(
         loginName: string,
-        accessTokenName: string,
         userstate: any,
-        success: (user: UserInfo, userstate: any) => void,
-        error: (reason: any, userstate: any) => void,
+        success: () => void,
+        redirecting: () => void,
+        error: (reason: any) => void,
         log: ILogger
     ): void;
 
     handleRedirect(
         url: string,
         success: (loginName: string, user: UserInfo, userstate: any) => void,
+        noRedirect: () => void,
         error: (loginName: string, reason: any, userstate: any) => void
     ): any;
 

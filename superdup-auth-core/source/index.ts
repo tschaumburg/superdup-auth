@@ -1,8 +1,10 @@
 ﻿export { ILogger, ConsoleLogger } from "./logger"; 
-export { IBaseProvider, IImplicitProvider, IHybridProvider } from "./providers/index";
+export { IBaseProvider, IImplicitProvider, ImplicitSuccess, ImplicitFailure, ImplicitRedirecting, IHybridProvider } from "./providers/index";
+export { FlowHelper, RequestInfo, AccessTokenInfo } from "./providers";
 export { ILoginManager } from "./iloginmanager"; 
 export { UserInfo } from "./userinfo";
-export { IBuilderManager, ILogin, IImplicitBuilder } from "./builders"; 
+export { IBuilderManager, IImplicitBuilder } from "./builders"; 
+export { ILogin } from "./ilogin";
 
 export { createBuilderManager } from "./builders/impl";
 import { createLoginManager } from "./impl"; 

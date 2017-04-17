@@ -1,4 +1,4 @@
-import sdpAuthCore = require("superdup-auth-core");
+import sdpAuthCore = require("superdup-auth-core"); 
 import { Logger } from "oidc-client";
 import { OidcOptions, LoginMechanism } from "./options";
 import jwt_decode = require("jwt-decode");
@@ -48,14 +48,13 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
 
     public login(
         nonce: string,
-        userstate: any,
+        encodedState: string,
         accessToken: { name: string, resource: string, scopes: string[] },
         success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        redirecting:() => void,
         error: (reason: any) => void
     ): void
     {
-        var encodedState = JSON.stringify(userstate);//(tokenstate);
-
         // we're just requesting an idtoken:
         var audience: string = undefined;
         var scopestring = "openid profile";
@@ -76,9 +75,9 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
 
         switch (this.options.loginMechanism) {
             case LoginMechanism.popup:
-                return this.signinPopup(nonce, scopestring, responsetype, userstate, success, error);
+                return this.signinPopup(nonce, scopestring, responsetype, encodedState, success, redirecting, error);
             case LoginMechanism.redirect:
-                return this.signinRedirect(nonce, scopestring, responsetype, userstate, success, error);
+                return this.signinRedirect(nonce, scopestring, responsetype, encodedState, success, redirecting, error);
             default:
                 throw new Error("Only popup and redirect login mechanisms are currently supported");
         }
@@ -90,6 +89,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
         responseType: string,
         userstate: any,
         success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        redirecting:() => void,
         error: (reason: any) => void
     ): void 
     {
@@ -122,7 +122,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
             {
                 //this.superdupLoggingService.username = self.username;
                 self.log.trace('signingPopup() succeeded');
-                success(this.mapUser(user), null);
+                success(this.mapUser(user), user.access_token);
             })
             .catch(function (reason: any)
             {
@@ -137,6 +137,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
         responseType: string,
         userstate: any,
         success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        redirecting:() => void,
         error: (reason: any) => void
     ): void 
     {
@@ -169,7 +170,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
                 {
                     //this.superdupLoggingService.username = self.username;
                     self.log.trace('signinRedirect() request sent - result will be returned in an HTTPS 302 (redirect)');
-                    success(null, null);
+                    redirecting();
                 })
                 .catch(function (reason: any)
                 {
@@ -256,6 +257,10 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
             idtoken: src.id_token,
             idtokenClaims: src.profile,
         }
+    }
+
+    public logout(): void
+    {
     }
 }
 

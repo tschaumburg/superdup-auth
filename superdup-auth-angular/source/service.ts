@@ -53,13 +53,13 @@ export class AuthService implements IAuthService
 
         this.authManager.login(
             loginName,
-            accessTokenName,
             userstate,
-            (user, state) =>
+            () =>
             {
                 deferred.resolve();
             },
-            (reason, state) =>
+            () => { },
+            (reason) =>
             {
                 deferred.reject(reason);
             },

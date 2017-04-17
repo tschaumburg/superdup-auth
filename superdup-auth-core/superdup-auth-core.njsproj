@@ -38,7 +38,7 @@
     <TypeScriptCompile Include="source\builders\impl\index.ts" />
     <TypeScriptCompile Include="source\builders\index.ts" />
     <TypeScriptCompile Include="source\builders\imanager.ts" />
-    <TypeScriptCompile Include="source\builders\ilogin.ts" />
+    <TypeScriptCompile Include="source\ilogin.ts" />
     <TypeScriptCompile Include="source\builders\impl\manager.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -46,6 +46,9 @@
     <TypeScriptCompile Include="source\impl\datastore\index.ts" />
     <TypeScriptCompile Include="source\impl\datastore\istorage.ts" />
     <TypeScriptCompile Include="source\impl\index.ts" />
+    <TypeScriptCompile Include="source\providers\flowhelper.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="source\providers\ihybrid.ts" />
     <TypeScriptCompile Include="source\providers\ibase.ts" />
     <TypeScriptCompile Include="source\providers\impl\index.ts" />
@@ -57,7 +60,7 @@
     <TypeScriptCompile Include="source\impl\loginmanager.ts" />
     <TypeScriptCompile Include="source\logger.ts" />
     <TypeScriptCompile Include="source\index.ts" />
-    <TypeScriptCompile Include="source\builders\impl\login.ts">
+    <TypeScriptCompile Include="source\impl\login.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="source\impl\tokens\index.ts" />

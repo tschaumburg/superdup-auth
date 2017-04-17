@@ -39,15 +39,15 @@ export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
     }
 
     public login(
+        requestRefreshToken: boolean,
         nonce: string,
-        userstate: any,
+        encodedState: string,
         accessToken: { name: string, resource: string, scopes: string[] },
         success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        redirecting: () => void,
         error: (reason: any) => void
     ): void
     {
-        var encodedState = JSON.stringify(userstate);
-
         // we're just requesting an idtoken:
         var audience: string = undefined;
         var scopestring = "openid profile offline_access";
@@ -79,24 +79,36 @@ export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
             "redirectUri =" + this.options.redirectUri +
             ")");
 
-        this.webauth.authorize(
-            {
-                domain: this.options && this.options.domain,
-                clientID: this.options && this.options.clientId,
-                audience: audience, // 'https://api.superdup.dk'
-                scope: scopestring, //'read:boards edit:boards'
-                state: encodedState,
-                responseType: responsetype, // 'id_token token',
-                redirectUri: this.options.redirectUri,
-                nonce: nonce, //"x",
-            }
-        );
+        try
+        {
+            this.webauth.authorize(
+                {
+                    domain: this.options && this.options.domain,
+                    clientID: this.options && this.options.clientId,
+                    audience: audience, // 'https://api.superdup.dk'
+                    scope: scopestring, //'read:boards edit:boards'
+                    state: encodedState,
+                    responseType: responsetype, // 'id_token token',
+                    redirectUri: this.options.redirectUri,
+                    nonce: nonce, //"x",
+                }
+            );
+            redirecting();
+        }
+        catch (reason)
+        {
+            error(reason);
+        }
     };
+
+    public logout(): void
+    {
+    }
 
     public handleRedirect(
         actualRedirectUrl: string,
         nonce: string,
-        success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
+        success: (user: sdpAuthCore.UserInfo, accessToken: string, refreshToken: string) => void,
         error: (reason: any) => void
     ): void 
     {
@@ -145,7 +157,7 @@ export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
                     }
 
                     this.log.info("handleRedirect(): idtoken " + JSON.stringify(userinfo));
-                    return success(this.mapUser(data.idToken, userinfo as auth0jscode.UserInfo), data.accessToken);
+                    return success(this.mapUser(data.idToken, userinfo as auth0jscode.UserInfo), data.accessToken, data.refreshToken);
                 }
 
                 // as a last resort, try getting userinfo from the auth0 server
@@ -172,7 +184,7 @@ export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
                             }
 
                             this.log.debug("userInfo() returns " + JSON.stringify(user));
-                            return success(this.mapUser(data.idToken, user), data.accessToken);
+                            return success(this.mapUser(data.idToken, user), data.accessToken, data.refreshToken);
                         }
                     );
                 }

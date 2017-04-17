@@ -1,4 +1,4 @@
-﻿import { ILogin } from "./ilogin";
+﻿import { ILogin } from "../ilogin";
 import { ILogger } from "../logger";
 import { IImplicitProvider } from "../providers";
 

@@ -1,5 +1,5 @@
 ﻿import { ILogger } from "../logger";
-import { ILogin } from "./ilogin";
+import { ILogin } from "../ilogin";
 import { IImplicitBuilder } from "./iimplicit";
 import { IHybridBuilder } from "./ihybrid";
 import { IImplicitProvider, IHybridProvider } from "../providers";
