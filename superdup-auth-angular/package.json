@@ -7,11 +7,10 @@
   "files": [
     "dist/"
   ],
-    "dependencies": {
-        "@types/node": "^7.0.2",
-        "superdup-auth-core": "*",
-        "angular": "^1.6.1"
-    },
+  "dependencies": {
+    "@types/node": "^7.0.2",
+    "angular": "^1.6.1"
+  },
   "devDependencies": {
     "@types/angular": "^1.6.2",
     "@types/node": "^7.0.1",
@@ -24,12 +23,11 @@
     "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
-    "grunt-npm-command": "^0.1.2",
     "grunt-publish": "^1.0.0",
     "grunt-webpack": "^2.0.1",
     "tsify": "^3.0.0",
     "typescript": "^2.1.5",
-    "uglifyjs-webpack-plugin": "^0.4.2",
+    "uglifyjs-webpack-plugin": "^0.4.2", 
     "webpack": "^2.3.3"
   },
   "scripts": {

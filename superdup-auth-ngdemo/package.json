@@ -14,11 +14,7 @@
     "@types/node": "^7.0.2",
     "angular": "^1.6.1",
     "angular-ui-router": "^0.4.2",
-    "jwt-decode": "^2.2.0",
-    "superdup-auth-angular": "*",
-    "superdup-auth-auth0js": "*",
-    "superdup-auth-core": "*",
-    "superdup-auth-oidc": "*"
+    "jwt-decode": "^2.2.0"
   },
   "devDependencies": {
     "@types/angular": "^1.6.2",
@@ -37,7 +33,6 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^2.0.0",
     "grunt-contrib-uglify": "^2.0.0",
-    "grunt-npm-command": "^0.1.2",
     "grunt-publish": "^1.0.0",
     "http-server": "^0.9.0",
     "load-grunt-configs": "^1.0.0",

@@ -47,7 +47,7 @@ class LandingPageController
 
     public logout(): void
     {
-        this.authService.logout("newauth0");
+        this.authService.getLogin("newauth0").logout();
         this.updateTokens();
     }
 

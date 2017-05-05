@@ -1,6 +1,9 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
+**/node_modules
+**/bin
+**/dist
+**/obj
 /superdup-auth-ngdemo/www
 /superdup-auth-ngdemo/source/auth-secrets.json

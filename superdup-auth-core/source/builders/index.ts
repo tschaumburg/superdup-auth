@@ -1,3 +1,4 @@
-﻿export { IBuilderManager } from "./imanager";
-export { IImplicitBuilder } from "./iimplicit";
-export { IHybridBuilder } from "./ihybrid";
+﻿export { HybridLoginBuilder, THybridLoginBuilder } from "./hybridloginbuilder"; 
+export { ImplicitLoginBuilder, TImplicitLoginBuilder } from "./implicitloginbuilder"; 
+export { TokenBuilder } from "./tokenbuilder"; 
+export { ApiBuilder } from "./apibuilder"; 

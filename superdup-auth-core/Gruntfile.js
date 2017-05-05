@@ -7,7 +7,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-publish');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-webpack');
-    grunt.loadNpmTasks('grunt-npm-command');
+    //grunt.loadNpmTasks('grunt-npm-command'); // DON'T USE => MAX_PATH error
 
     //configs = require('load-grunt-configs')(grunt, { config: { src: "grunt/*.js" } });
     //grunt.initConfig(configs);

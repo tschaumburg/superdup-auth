@@ -5,7 +5,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks( 'grunt-contrib-copy' );
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.loadNpmTasks('grunt-npm-command');
 
     ////loads the various task configuration files
     configs = require( 'load-grunt-configs' )( grunt, { config: { src: "grunt/*.js" } } );

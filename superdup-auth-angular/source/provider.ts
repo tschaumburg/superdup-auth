@@ -4,11 +4,12 @@ import auth = require("superdup-auth-core");
 import service = require('./service');
 
 import { IBuilderManager } from "superdup-auth-core";
+import { ILog, ConsoleLog } from "superdup-auth-log"; 
 
 export interface IAuthServiceProvider extends angular.IServiceProvider
 {
-    initLog(log: auth.ILogger): IAuthServiceProvider;
-    readonly builder: IBuilderManager;
+    initLog(log: ILog): IAuthServiceProvider;
+    //readonly builder: IBuilderManager;
     handleRedirect(
         url: string,
         success: (userdata: any) => void,
@@ -49,25 +50,33 @@ export class AuthServiceProvider implements IAuthServiceProvider
 
     //    return new helpers.ConfigHelper(AuthServiceProvider.authManager);
     //}
-    private _manager: auth.ILoginManager = null;
-    public get manager(): auth.ILoginManager
+    private _manager: auth.IAuthenticationManager = null;
+    public get manager(): auth.IAuthenticationManager
     {
         if (!this._manager)
-            this._manager = auth.createLoginManager2(this.log);
+            this._manager = auth.createAuthenticationManager(this.log);
         return this._manager;
     }
 
-    private _builder: auth.IBuilderManager = null;
-    public get builder(): auth.IBuilderManager
-    {
-        if (!this._builder)
-            this._builder = auth.createBuilderManager(this.manager);
-        return this._builder;
-    }
-        //
+    //private _manager: auth.ILoginManager = null;
+    //public get manager(): auth.ILoginManager
+    //{
+    //    if (!this._manager)
+    //        this._manager = auth.createLoginManager2(this.log);
+    //    return this._manager;
+    //}
 
-    private log: auth.ILogger = null;
-    public initLog(log: auth.ILogger): AuthServiceProvider
+    //private _builder: auth.IBuilderManager = null;
+    //public get builder(): auth.IBuilderManager
+    //{
+    //    if (!this._builder)
+    //        this._builder = auth.createBuilderManager(this.manager);
+    //    return this._builder;
+    //}
+    //    //
+
+    private log: ILog = null;
+    public initLog(log: ILog): AuthServiceProvider
     {
         if (!!this.log)
             throw new Error("initLog() can only be called once");
@@ -75,11 +84,11 @@ export class AuthServiceProvider implements IAuthServiceProvider
         if (!log)
             throw new Error("initLog(log) be called with a non-null arg");
 
-        if (!!this._builder)
-            throw new Error("initLog() cannot be called after configuration has begun");
+        //if (!!this._builder)
+        //    throw new Error("initLog() cannot be called after configuration has begun");
 
         if (!log.sublog)
-            log = new auth.ConsoleLogger(log, "auth");
+            log = new ConsoleLog(log, "auth");
 
         this.log = log;
         return this;
@@ -100,7 +109,7 @@ export class AuthServiceProvider implements IAuthServiceProvider
                 $injector,
                 $injector.get("$q"),
                 this.manager,
-                this.builder,
+                //this.builder,
                 this.log
             );
         }];

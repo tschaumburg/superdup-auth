@@ -1,14 +1,15 @@
 import sdpAuthCore = require("superdup-auth-core"); 
+import { ILog } from "superdup-auth-log";
 import { Logger } from "oidc-client";
 import { OidcOptions, LoginMechanism } from "./options";
 import jwt_decode = require("jwt-decode");
 
 export class OidcImplicit implements sdpAuthCore.IImplicitProvider
 {
-    private log: sdpAuthCore.ILogger = console;
+    private log: ILog = console;
     private manager: Oidc.UserManager;
 
-    public constructor(private readonly options: OidcOptions, log: sdpAuthCore.ILogger)
+    public constructor(private readonly options: OidcOptions, log: ILog)
     {
         if (!log)
             log = console;
@@ -49,6 +50,7 @@ export class OidcImplicit implements sdpAuthCore.IImplicitProvider
     public login(
         nonce: string,
         encodedState: string,
+        idScopes: string[],
         accessToken: { name: string, resource: string, scopes: string[] },
         success: (user: sdpAuthCore.UserInfo, accessToken: string) => void,
         redirecting:() => void,

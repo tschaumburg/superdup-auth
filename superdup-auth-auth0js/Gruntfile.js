@@ -9,7 +9,7 @@ module.exports = function (grunt)
     grunt.loadNpmTasks('grunt-publish');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-webpack');
-    grunt.loadNpmTasks('grunt-npm-command');
+    //grunt.loadNpmTasks('grunt-npm-command');
 
     grunt.initConfig({
         clean: {

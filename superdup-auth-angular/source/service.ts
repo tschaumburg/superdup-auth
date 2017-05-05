@@ -9,8 +9,8 @@ export interface IAuthService
     //* 
     //* 
     //********************************************************************
-    login(loginName: string, accessTokenName: string, userstate?: any): ng.IPromise<void>;
-    logout(loginName: string): ng.IPromise<void>;
+    //login(loginName: string, accessTokenName: string, userstate?: any): ng.IPromise<void>;
+    //logout(loginName: string): ng.IPromise<void>;
 
     //********************************************************************
     //* Browsing:
@@ -18,7 +18,7 @@ export interface IAuthService
     //* Mostly for test and demo purposes
     //* 
     //********************************************************************
-    getLoginNames(): string[];
+    //getLoginNames(): string[];
     getLogin(loginName: string): auth.ILogin;
 
     //********************************************************************
@@ -35,9 +35,9 @@ export class AuthService implements IAuthService
     constructor(
         private $injector: ng.auto.IInjectorService,
         private $q: ng.IQService,
-        private readonly authManager: auth.ILoginManager,
-        private readonly builder: auth.IBuilderManager,
-        public log: auth.ILogger)
+        private readonly authManager: auth.IAuthenticationManager,
+        //private readonly builder: auth.IBuilderManager,
+        public log: auth.ILog)
     {
     }
 
@@ -47,45 +47,45 @@ export class AuthService implements IAuthService
     //* 
     //* 
     //********************************************************************
-    public login(loginName: string, accessTokenName: string, userstate: { uistate?: string, custom?: any } = null): ng.IPromise<void>
-    {
-        var deferred = this.$q.defer<void>();
+    //public login(loginName: string, accessTokenName: string, userstate: { uistate?: string, custom?: any } = null): ng.IPromise<void>
+    //{
+    //    var deferred = this.$q.defer<void>();
 
-        this.authManager.login(
-            loginName,
-            userstate,
-            () =>
-            {
-                deferred.resolve();
-            },
-            () => { },
-            (reason) =>
-            {
-                deferred.reject(reason);
-            },
-            this.log
-        );
+    //    this.authManager.login(
+    //        loginName,
+    //        userstate,
+    //        () =>
+    //        {
+    //            deferred.resolve();
+    //        },
+    //        () => { },
+    //        (reason: any) =>
+    //        {
+    //            deferred.reject(reason);
+    //        },
+    //        this.log
+    //    );
 
-        return deferred.promise;
-    }
+    //    return deferred.promise;
+    //}
 
-    public logout(loginName: string): ng.IPromise<void>
-    {
-        var deferred = this.$q.defer<void>();
+    //public logout(loginName: string): ng.IPromise<void>
+    //{
+    //    var deferred = this.$q.defer<void>();
 
-        this.authManager.logout2(loginName, this.log);
+    //    this.authManager.logout2(loginName, this.log);
 
-        return deferred.promise;
-    }
+    //    return deferred.promise;
+    //}
 
-    public getLoginNames(): string[]
-    {
-        return this.builder.getLoginNames();
-    }
+    //public getLoginNames(): string[]
+    //{
+    //    return this.builder.getLoginNames();
+    //}
 
     public getLogin(loginName: string): auth.ILogin
     {
-        return this.builder.getLogin(loginName);
+        return this.authManager.getLogin(loginName);
     }
 
     //********************************************************************
