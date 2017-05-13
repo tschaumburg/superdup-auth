@@ -1,5 +1,6 @@
-﻿import { ILog } from "superdup-auth-log";
-import { ILogin, IHybridLogin } from "./loginmanager";
+﻿import { ILog, ILogTarget, createLog } from "superdup-auth-log";
+import { ILogin2, Login2 } from "./login2";
+//import { ILogin, IHybridLogin } from "./loginmanager";
 import { IImplicitProvider, IHybridProvider } from "./providermanager";
 import { UserInfo} from "./userinfo";
 
@@ -7,16 +8,17 @@ import { ApiManager } from "./apimanager";
 import { IAuthenticationManager } from "./iauthenticationmanager";
 import { IProviderManager, createProviderManager } from "./providermanager";
 import { ILoginManager, createLoginManager } from "./loginmanager";
-import { ITokenManager, ITokenProvider } from "./tokenmanager";
-import { TImplicitLoginBuilder, ImplicitLoginBuilder, THybridLoginBuilder, HybridLoginBuilder, TokenBuilder } from "./builders";
+import { IAuthenticationConfig, createConfigBuilder } from "./builders/iauthenticationconfig";
+import { ITokenManager, ITokenProvider, createTokenManager } from "./tokenmanager";
 
-export function createAuthenticationManager(log: ILog): IAuthenticationManager
+export function createAuthenticationManager(log: ILogTarget): IAuthenticationManager
 {
-    return new AuthenticationManager(log);
+    return new AuthenticationManager(createLog(log, "auth"));
 }
 
 export class AuthenticationManager implements IAuthenticationManager
 {
+    public readonly config: IAuthenticationConfig;
     private readonly _loginManager: ILoginManager;
     private readonly _tokenManager: ITokenManager;
     private readonly _apiManager: ApiManager = new ApiManager();
@@ -24,42 +26,14 @@ export class AuthenticationManager implements IAuthenticationManager
     {
         var provider = createProviderManager();
         this._loginManager = createLoginManager(provider, this._log);
+        this._tokenManager = createTokenManager(this._log);
+        this.config = createConfigBuilder(this._log, this._loginManager, this._tokenManager, this._apiManager);
     }
 
-    //********************************************************************
-    //* Logins:
-    //* ===================
-    //* 
-    //* 
-    //********************************************************************
-    public implicitLogin<TOptions>(
-        flow: new (args: TOptions, log: ILog) => IImplicitProvider
-    ): TImplicitLoginBuilder<TOptions>
+    public getLogin(loginName: string): ILogin2
     {
-        return new TImplicitLoginBuilder<TOptions>(this._loginManager, flow);
-    }
-
-    public hybridLogin<TOptions>(
-        flow: new (args: TOptions, log: ILog) => IHybridProvider
-    ): THybridLoginBuilder<TOptions>
-    {
-        return new THybridLoginBuilder<TOptions>(this._loginManager, flow);
-    }
-
-    public getLogin(loginName: string): ILogin
-    {
-        return this._loginManager.getLogin(loginName);
-    }
-
-    //********************************************************************
-    //* Tokens:
-    //* =======
-    //* 
-    //* 
-    //********************************************************************
-    public token(resource: string, scopes: string[]): TokenBuilder
-    {
-        return new TokenBuilder(this._tokenManager, resource, scopes, this._log);
+        var impl = this._loginManager.getLogin(loginName);
+        return new Login2(impl, this._tokenManager);
     }
 
     //********************************************************************
@@ -84,12 +58,13 @@ export class AuthenticationManager implements IAuthenticationManager
         error: (reason: any) => void
     ): void
     {
-        var tokenName = this._apiManager.resolve(url);
+        var tokenName = this._apiManager.resolveApi(url);
         if (!tokenName)
         {
             var msg = "URL " + url + " unprotected";
             this._log.debug(msg);
             success(null);
+            return;
         }
 
         var token = this._tokenManager.tokenByName(tokenName);
@@ -98,6 +73,7 @@ export class AuthenticationManager implements IAuthenticationManager
             var msg = "Cannot get token " + tokenName + " for url " + url;
             this._log.debug(msg);
             error(msg);
+            return;
         }
 
         token.getValue(success, error);

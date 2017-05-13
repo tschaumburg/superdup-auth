@@ -1,41 +1,49 @@
-﻿import { ILog } from "./ilog";
+﻿import { ILogTarget } from "./ilogtarget";
+import { ILog } from "./ilog";
+import { Log } from "./log";
 
-export class ConsoleLog implements ILog
+export class ConsoleLog 
 {
-    constructor(private readonly _console: ILog, private readonly _prefix: string = "") { }
-
-    public error(message?: any, ...optionalParams: any[]): void
+    private static _target: ILogTarget = null;
+    private static _log: ILog = null;
+    public static get Current(): ILog
     {
-        this._console.error(this._prefix + ": " + message, optionalParams);
+        if (ConsoleLog._target == null)
+            ConsoleLog._target = new ConsoleTarget();
+
+        if (ConsoleLog._log == null)
+            ConsoleLog._log = new Log(ConsoleLog._target, "");
+
+        return ConsoleLog._log;
+    }
+}
+
+class ConsoleTarget implements ILogTarget
+{
+    //constructor(private readonly _console: ILog, private readonly _prefix: string = "") { }
+
+    public fatal(logname: string, message: string): void
+    {
+        console.error(logname + ": " + message);
     }
 
-    public warn(message?: any, ...optionalParams: any[]): void
+    public error(logname: string, message: string): void
     {
-        this._console.warn(this._prefix + ": " + message, optionalParams);
+        console.error(logname + ": " + message);
     }
 
-    public log(message?: any, ...optionalParams: any[]): void
+    public warn(logname: string, message: string): void
     {
-        this._console.log(this._prefix + ": " + message, optionalParams);
+        console.warn(logname + ": " + message);
     }
 
-    public info(message?: any, ...optionalParams: any[]): void
+    public info(logname: string, message: string): void
     {
-        this._console.info(this._prefix + ": " + message, optionalParams);
+        console.info(logname + ": " + message);
     }
 
-    public debug(message?: string, ...optionalParams: any[]): void
+    public debug(logname: string, message: string): void
     {
-        this._console.debug(this._prefix + ": " + message, optionalParams);
-    }
-
-    public trace(message?: any, ...optionalParams: any[]): void
-    {
-        this._console.trace(this._prefix + ": " + message, optionalParams);
-    }
-
-    public sublog(name: string): ILog
-    {
-        return new ConsoleLog(this._console, this._prefix + "." + name);
+        console.debug(logname + ": " + message);
     }
 }

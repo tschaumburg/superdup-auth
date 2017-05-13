@@ -19,10 +19,14 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
+    <TypeScriptCompile Include="source\logservice.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="source\module.ts" />
-    <TypeScriptCompile Include="source\service.ts" />
+    <TypeScriptCompile Include="source\logprovider.ts" />
+    <TypeScriptCompile Include="source\authservice.ts" />
     <TypeScriptCompile Include="source\helpers.ts" />
-    <TypeScriptCompile Include="source\provider.ts" />
+    <TypeScriptCompile Include="source\authprovider.ts" />
     <TypeScriptCompile Include="source\index.ts" />
     <TypeScriptCompile Include="source\utils.ts" />
   </ItemGroup>

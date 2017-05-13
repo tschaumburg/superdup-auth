@@ -62,54 +62,65 @@ export function config(
 ): any
 {
     {
-        authProvider
-            .initLog(console)
-            .builder
-            //.useHybridFlow<auth0js.Auth0jsOptions>(auth0js.Auth0Hybrid)
-            .useImplicitFlow<auth0js.Auth0jsOptions>(auth0js.Auth0Implicit)
-            .withParameters(
-                {
-                    domain: authSecrets.auth0.domain,
-                    clientId: authSecrets.auth0.clientId,
-                    redirectUri: "http://localhost:58378", //authConf.redirectUri,
-                    flow: auth0js.AuthFlow.implicit,
-                }
-            )
+        var authBuilder = authProvider.config;
 
-            //.accessToken(
-            //    "superdupApi",
-            //    "https://api.superdup.dk",
-            //    [
-            //        "read:boards",
-            //        "edit:boards"
-            //    ],
-            //    [
-            //        "https://api.superdup.dk/boards",
-            //        "https://api.superdup.dk/boards/long"
-            //    ]
-            //)
-            .providingAccessToken(
-                "localSuperdupApi",
-                "https://localhost/SuperDup.API",
-                [
-                    "read:boards",
-                    "edit:boards"
-                ],
-                [
-                    "https://localhost/SuperDup.API"
-                ]
-            )
-            //.accessToken(
-            //    "userinfo",
-            //    "https://schaumburgit.auth0.com/userinfo",
-            //    [],
-            //    [
-            //        "https://api.superdup.dk/whoami"
-            //    ]
-            //)
-            //.setDefault("auth0js", "auth0", "localSuperdupApi")
-            .registerAs("newauth0")
-            ;
+        // Define accesss tokens:
+        // ======================
+        var editBoardsToken =
+            authBuilder
+                .token("https://api.superdup.dk", ["read:boards", "edit:boards"])
+                .registerAs("superdupApi");
+
+
+        // Define the login(s) providing the tokens:
+        // =========================================
+        var myImplicitLogin =
+            authBuilder
+                .implicitLogin<auth0js.Auth0jsOptions>(auth0js.Auth0Implicit)
+                .withOptions(
+                    {
+                        domain: authSecrets.auth0.domain,
+                        clientId: authSecrets.auth0.clientId,
+                        redirectUri: "http://localhost:58378", //authConf.redirectUri,
+                        flow: auth0js.AuthFlow.implicit,
+                    })  
+                .registerAs("newauth0");
+
+        var myHybridLogin =
+            authBuilder
+                .hybridLogin<auth0js.Auth0jsOptions>(auth0js.Auth0Hybrid)
+                .withOptions(
+                    {
+                        domain: authSecrets.auth0.domain,
+                        clientId: authSecrets.auth0.clientId,
+                        redirectUri: "http://localhost:58378", //authConf.redirectUri,
+                        flow: auth0js.AuthFlow.implicit,
+                })
+                .accessToken(editBoardsToken)
+                .registerAs("xxxx");
+
+        // Specify the URLS requirig the tokens:
+        // =====================================
+        authBuilder
+            .api("https://api.superdup.dk/boards")
+            .requiresToken(editBoardsToken)
+            .providedBy(myHybridLogin)
+            .registerAs("boardApi");
+
+            ////.accessToken(
+            ////    "userinfo",
+            ////    "https://schaumburgit.auth0.com/userinfo",
+            ////    [],
+            ////    [
+            ////        "https://api.superdup.dk/whoami"
+            ////    ]
+            ////)
+            ////.setDefault("auth0js", "auth0", "localSuperdupApi")
+            //.registerAs("newauth0")
+            //;
+
+        var state = authProvider.config.toString();
+        authProvider.config.verify();
 
         return authProvider.handleRedirect(url, null, null);
     }

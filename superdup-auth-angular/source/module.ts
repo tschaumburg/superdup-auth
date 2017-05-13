@@ -1,6 +1,7 @@
 ﻿import angular = require("angular");
-import provider = require('./provider');
-import service = require('./service');
+import logprovider = require('./logprovider');
+import provider = require('./authprovider');
+import service = require('./authservice');
 
 //require("angular-base64");
 //require("angular-jwt");
@@ -8,7 +9,10 @@ import service = require('./service');
 angular.module("superdup.auth", [/*'base64',*/ /*'angular-jwt'*/]);
 
 angular.module('superdup.auth')
-    .provider('superdupAuthService', ['$injector', provider.AuthServiceProvider]);
+    .provider('superdupAuthLogService', [logprovider.LogServiceProvider]);
+
+angular.module('superdup.auth')
+    .provider('superdupAuthService', ['superdupAuthLogServiceProvider', provider.AuthServiceProvider]);
 
 
 

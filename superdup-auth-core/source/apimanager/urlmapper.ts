@@ -1,9 +1,10 @@
-﻿var urlutils = require("../urlutils");
+﻿//var urlutils = require("../urlutils");
 
 export interface IUrlMapper<TValue>
 {
     add(urlPrefix: string, value: TValue): void;
     map(url: string): TValue;
+    entries(): { urlPrefix: string, value: TValue }[]
 }
 
 export class UrlMapper<TValue>
@@ -73,6 +74,19 @@ export class UrlMapper<TValue>
         }
 
         return null;
+    }
+
+    public entries(): { urlPrefix: string, value: TValue }[]
+    {
+        var res: { urlPrefix: string, value: TValue }[] = [];
+
+        for (var n = 0; n < this._valuesByDescendingUrl.length; n++)
+        {
+            var entry = this._valuesByDescendingUrl[n];
+            res.push({ urlPrefix: entry.urlPrefix, value: entry.value });
+        }
+
+        return res;
     }
 }
 

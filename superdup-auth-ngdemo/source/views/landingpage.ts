@@ -4,6 +4,7 @@ import jwtdecode = require("jwt-decode");
 
 class LandingPageController
 {
+    private newauth0: authcore.ILogin2;
     public tokens: { tokenName: string, tokenValue: {} }[] = [];
     public user: authcore.UserInfo;
     public constructor(
@@ -14,14 +15,14 @@ class LandingPageController
         $scope.ctrl = this;
         $scope.auth = authService;
 
+        this.newauth0 = this.authService.getLogin("newauth0");
         this.updateTokens();
     }
 
     public login()
     {
         var self = this;
-        this.authService
-            .getLogin("newauth0")
+        this.newauth0
             .login(
                 //"localSuperdupApi",
                 "/landingpage",
@@ -47,7 +48,7 @@ class LandingPageController
 
     public logout(): void
     {
-        this.authService.getLogin("newauth0").logout();
+        this.newauth0.logout();
         this.updateTokens();
     }
 
@@ -56,10 +57,10 @@ class LandingPageController
         if (!this.authService)
             return false;
 
-        if (!this.authService.getLogin("newauth0"))
+        if (!this.newauth0)
             return false;
 
-        if (!this.authService.getLogin("newauth0").user)
+        if (!this.newauth0.user)
             return false;
 
         return true;
@@ -67,17 +68,16 @@ class LandingPageController
 
     private updateTokens(): void
     {
-        this.user = this.authService.getLogin("newauth0").user;
+        this.user = this.newauth0.user;
         this.tokens = [];
 
-        var names = this.authService.getLogin("newauth0").getTokenNames();
-        for (var name of names)
+        for (var token of this.newauth0.tokens)
         {
-            var value = this.authService.getLogin("newauth0").getTokenValue(name);
+            var value = token.tokenValue;
             if (!value)
                 continue;
 
-            var decoded = { tokenName: name, tokenValue: jwtdecode(value) };
+            var decoded = { tokenName: token.tokenName, tokenValue: jwtdecode(value) };
             this.tokens.push(decoded);
         }
     }

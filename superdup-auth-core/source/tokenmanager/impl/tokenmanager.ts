@@ -27,14 +27,24 @@ export function createTokenManager(/*acquireAccessToken: acquireTokenFn,*/ log: 
 
 class AccessTokenManager implements ITokenManager
 {
-    public constructor(private readonly tokenStore: ITokenStore/*, private readonly acquireAccessToken: acquireTokenFn*/, log: ILog)
+    public constructor(private readonly tokenStore: ITokenStore/*, private readonly acquireAccessToken: acquireTokenFn*/, private readonly _log: ILog)
     {
-        this.loadState(log);
+        this.loadState(_log);
     }
 
     // 
     // =============
     private _tokens: { [id: string]: Token; } = {};
+
+    public get tokenNames(): string[]
+    {
+        var res: string[] = [];
+
+        for (var tokenName in this._tokens)
+            res.push(tokenName);
+
+        return res;
+    }
 
     public tokenByName(tokenName: string): IToken
     {
@@ -48,6 +58,13 @@ class AccessTokenManager implements ITokenManager
         for (var tokenname in this._tokens)
         {
             var tokenInfo = this._tokens[tokenname];
+            if (!tokenInfo.provider || !tokenInfo.provider.providerId)
+            {
+                if (!providerName)
+                    res.push(tokenInfo);
+                continue;
+            }
+
             if (tokenInfo.provider.providerId === providerName)
             {
                 res.push(tokenInfo);
@@ -129,15 +146,39 @@ class AccessTokenManager implements ITokenManager
     //    log.info("...saved " + tokens.length + " access tokens");
     //}
 
+    public registerProvider(
+        tokenName: string,
+        providedBy: ITokenProvider  
+    ): void
+    {
+        this._log.info("Registering provider " + providedBy.providerId + " for token " + tokenName);
+
+        var token = this._tokens[tokenName];
+        if (!token)
+        {
+            var msg = "No token " + tokenName + " registered";
+            this._log.error(msg);
+            throw new Error(msg);
+        }
+
+        if (!!token.provider)
+        {
+            var msg = "Token " + tokenName + " already has a provider registered";
+            this._log.error(msg);
+            throw new Error(msg);
+        }
+
+        token.provider = providedBy;
+    }
+
     public registerToken(
         tokenName: string,
         resource: string,
-        scopes: string[],
-        providedBy: ITokenProvider,
-        log: ILog
+        scopes: string[]
+        //providedBy: ITokenProvider
     ): IToken
     {
-        log.debug(
+        this._log.debug(
             "Registering access token \"" +
             tokenName +
             "\" (" +
@@ -154,9 +195,9 @@ class AccessTokenManager implements ITokenManager
                 tokenName,
                 resource,
                 scopes,
-                providedBy,
+                null, //providedBy,
                 this.tokenStore,
-                log
+                this._log
             );
 
         if (!!existingValue)
@@ -164,7 +205,7 @@ class AccessTokenManager implements ITokenManager
             if (this.sameDefinition(existingValue, newValue))
                 return existingValue;
 
-            log.error("Trying to redefine access token \"" + tokenName + "\"");
+            this._log.error("Trying to redefine access token \"" + tokenName + "\"");
         }
 
         this._tokens[tokenName] = newValue;

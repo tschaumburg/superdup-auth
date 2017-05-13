@@ -22,17 +22,26 @@
     <Content Include=".gitignore" />
     <Content Include="package.json" />
     <Content Include="packages.config" />
-    <Content Include="source\builders\apibuilder.ts" />
+    <Content Include="source\builders\iapibuilder.ts" />
     <Content Include="source\flows.md" />
     <Content Include="tsconfig.json" />
     <Compile Include="Gruntfile.js" />
+    <TypeScriptCompile Include="source\apimanager\iapimanager.ts" />
     <TypeScriptCompile Include="source\apimanager\apimanager.ts" />
     <TypeScriptCompile Include="source\apimanager\iapi.ts" />
+    <TypeScriptCompile Include="source\builders\impl\apibuilder.ts" />
+    <TypeScriptCompile Include="source\builders\impl\authenticationconfig.ts" />
+    <TypeScriptCompile Include="source\builders\iauthcodeloginbuilder.ts" />
+    <TypeScriptCompile Include="source\builders\ihybridloginbuilder.ts" />
+    <TypeScriptCompile Include="source\builders\iloginbuilder.ts" />
+    <TypeScriptCompile Include="source\builders\impl\implicitloginbuilder.ts" />
+    <TypeScriptCompile Include="source\builders\impl\tokenbuilder.ts" />
     <TypeScriptCompile Include="source\builders\index.ts" />
-    <TypeScriptCompile Include="source\builders\implicitloginbuilder.ts" />
-    <TypeScriptCompile Include="source\builders\hybridloginbuilder.ts" />
-    <TypeScriptCompile Include="source\builders\tokenbuilder.ts" />
+    <TypeScriptCompile Include="source\builders\iimplicitloginbuilder.ts" />
+    <TypeScriptCompile Include="source\builders\impl\hybridloginbuilder.ts" />
+    <TypeScriptCompile Include="source\builders\itokenbuilder.ts" />
     <TypeScriptCompile Include="source\example.ts" />
+    <TypeScriptCompile Include="source\builders\iauthenticationconfig.ts" />
     <TypeScriptCompile Include="source\login2.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -60,6 +69,9 @@
     <TypeScriptCompile Include="source\providermanager\iauthcode.ts" />
     <TypeScriptCompile Include="source\tokenmanager\impl\token.ts" />
     <TypeScriptCompile Include="source\tokenmanager\itoken.ts" />
+    <TypeScriptCompile Include="source\utils\asciitable.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="source\utils\index.ts" />
     <TypeScriptCompile Include="source\loginmanager\iloginmanager.ts" />
     <TypeScriptCompile Include="source\utils\tokenutils.ts" />
@@ -95,6 +107,7 @@
   <ItemGroup>
     <Folder Include="grunt\" />
     <Folder Include="source" />
+    <Folder Include="source\builders\impl\" />
     <Folder Include="source\loginmanager\builders\impl\" />
     <Folder Include="source\datastore\" />
     <Folder Include="source\builders\" />

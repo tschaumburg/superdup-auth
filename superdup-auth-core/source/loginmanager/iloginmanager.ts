@@ -43,5 +43,7 @@ export interface ILoginManager
     ): IAuthCodeLogin;
 
     getLogin(loginName: string): ILogin;
+
+    readonly loginNames: string[];
 }
 

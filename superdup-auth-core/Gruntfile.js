@@ -19,7 +19,10 @@ module.exports = function (grunt) {
         },
         webpack: {
             options: {
-                entry: './dist/index.js'
+                entry: './dist/index.js',
+                externals: {
+                    'superdup-auth-log': 'superdup-auth-log'
+                }
             },
             prod: {
                 output: {

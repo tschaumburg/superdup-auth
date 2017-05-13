@@ -1,31 +1,17 @@
 ﻿import { ILog } from "superdup-auth-log";
-import { ILogin, IHybridLogin } from "./loginmanager";
-import { IImplicitProvider, IHybridProvider } from "./providermanager";
+import { ILogin2 } from "./login2";
+//import { ILogin, IHybridLogin } from "./loginmanager";
+//import { IImplicitProvider, IHybridProvider } from "./providermanager";
 import { UserInfo } from "./userinfo";
-import { TImplicitLoginBuilder, THybridLoginBuilder, ApiBuilder, TokenBuilder } from "./builders";
+import { IAuthenticationConfig } from "./builders/iauthenticationconfig";
+//import { TImplicitLoginBuilder, THybridLoginBuilder, ApiBuilder, TokenBuilder } from "./builders";
 
 
 export interface IAuthenticationManager
 {
-    //api(urlPrefix: string): ApiBuilder;
+    readonly config: IAuthenticationConfig;
 
-    token(resource: string, scopes: string[]): TokenBuilder;
-
-    //********************************************************************
-    //* Logins:
-    //* ===================
-    //* 
-    //* 
-    //********************************************************************
-    implicitLogin<TOptions>(
-        flow: new (args: TOptions, log: ILog) => IImplicitProvider
-    ): TImplicitLoginBuilder<TOptions>;
-
-    hybridLogin<TOptions>(
-        flow: new (args: TOptions, log: ILog) => IHybridProvider
-    ): THybridLoginBuilder<TOptions>;
-
-    getLogin(loginName: string): ILogin;
+    getLogin(loginName: string): ILogin2;
 
     //********************************************************************
     //* :

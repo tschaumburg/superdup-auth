@@ -6,25 +6,68 @@ import { isExpired, getExpiration } from '../../utils';
 
 export class Token implements IToken
 {
-    tokenValue: string = null;
     expiresAt: number = null;
 
     public constructor(
         public readonly tokenName: string,
         public readonly resource: string,
         public readonly scopes: string[],
-        public readonly provider: ITokenProvider,
+        provider: ITokenProvider,
         private readonly tokenStore: ITokenStore,
         private readonly log: ILog
     )
     {
         var self = this;
-        this.provider.loggingOut.sub(
-            (src, v) =>
-            {
-                self.clearValue();
-            }
-        );
+        this.provider = provider;
+    }
+
+    private _provider: ITokenProvider = null;
+    public get provider(): ITokenProvider
+    {
+        return this._provider;
+    }
+
+    public set provider(value: ITokenProvider)
+    {
+        if (value == this._provider)
+            return;
+
+        if (!!this._provider)
+        {
+            var self = this;
+            this.provider.loggingOut.unsub(
+                (src, v) =>
+                {
+                    self.clearValue();
+                }
+            );
+        }
+
+        this._provider = value;
+
+        if (!!this._provider)
+        {
+            var self = this;
+            this.provider.loggingOut.sub(
+                (src, v) =>
+                {
+                    self.clearValue();
+                }
+            );
+        }
+    }
+
+    _tokenValue: string = null;
+    public get tokenValue(): string
+    {
+        return this._tokenValue;
+    }
+
+    public get providerId(): string
+    {
+        if (!this.provider)
+            return null;
+        return this.provider.providerId;
     }
 
     public getValue(
@@ -35,12 +78,12 @@ export class Token implements IToken
         // Check for expiration:
         if (isExpired(this.expiresAt))
         {
-            this.tokenValue = null;
+            this._tokenValue = null;
             this.expiresAt = null;
         }
 
-        if (!!this.tokenValue)
-            return success(this.tokenValue);
+        if (!!this._tokenValue)
+            return success(this._tokenValue);
 
         this.provider.provideTokenValue(
             this.resource,
@@ -63,25 +106,25 @@ export class Token implements IToken
             return;
         }
 
-        this.tokenValue = accessTokenValue;
+        this._tokenValue = accessTokenValue;
         this.expiresAt = getExpiration(accessTokenValue);
 
         if (isExpired(this.expiresAt))
         {
             this.log.debug("Expired value for access token " + this.tokenName);
-            this.tokenValue = null;
+            this._tokenValue = null;
             this.expiresAt = null;
             return;
         }
 
-        this.tokenStore.saveToken(this.tokenName, this.tokenValue);
+        this.tokenStore.saveToken(this.tokenName, this._tokenValue);
     }
 
     private clearValue(): void
     {
         this.log.debug("Clearing access token " + this.tokenName);
 
-        this.tokenValue = null;
+        this._tokenValue = null;
         this.expiresAt = null;
 
         this.tokenStore.clearToken(this.tokenName);

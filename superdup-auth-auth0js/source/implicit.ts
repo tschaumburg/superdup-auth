@@ -1,5 +1,5 @@
 ﻿import sdpAuthCore = require("superdup-auth-core");
-import { ILog } from "superdup-auth-log";
+import { ILog, ConsoleLog } from "superdup-auth-log";
 import { WebAuth, ParseHashError, TokenPayload } from "auth0-js";
 import auth0jscode = require("auth0-js");
 import { Auth0jsOptions, AuthFlow } from "./options";
@@ -7,12 +7,12 @@ import jwt_decode = require("jwt-decode");
 
 export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
 {
-    private log: ILog = console;
+    private log: ILog = ConsoleLog.Current;
 
     public constructor(private readonly options: Auth0jsOptions, log: ILog)
     {
         if (!log)
-            log = console;
+            log = ConsoleLog.Current;
 
         this.log = log;
     }

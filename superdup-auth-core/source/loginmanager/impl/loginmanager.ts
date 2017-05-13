@@ -27,15 +27,11 @@ export class LoginManager implements ILoginManager
     constructor(private readonly _providerManager: IProviderManager, _log: ILog)
     {
         if (!_log)
-            _log = console;
-
-        if (!_log.sublog)
-            _log = new ConsoleLog(_log, "auth");
+            throw new Error("A non-null log parameter must be supplied");
 
         this.log = _log;
 
         this._userManager = new UserStore(_log);
-        var self = this;
     }
 
     private _logins: { [id: string]: ILogin; } = {};
@@ -143,6 +139,16 @@ export class LoginManager implements ILoginManager
         this._logins[loginName] = login;
 
         return login;
+    }
+
+    public get loginNames(): string[]
+    {
+        var res: string[] = [];
+
+        for (var loginName in this._logins)
+            res.push(loginName);
+
+        return res;
     }
 
     public getLogin(loginName: string): ILogin

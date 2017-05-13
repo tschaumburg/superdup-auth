@@ -1,14 +1,23 @@
 import { IApi } from "./iapi"; 
+import { IApiManager } from "./iapimanager"; 
+import { IUrlMapper, UrlMapper } from "./urlmapper"; 
 
-export class ApiManager
+export class ApiManager implements IApiManager
 {
-    public registerApi(urlPrefix: string, tokenName: string): IApi
+    private readonly _mapper: IUrlMapper<string> = new UrlMapper<string>();
+
+    public registerApi(urlPrefix: string, tokenName: string): void
     {
-        return null;
+        this._mapper.add(urlPrefix, tokenName);
     }
 
-    public resolve(url: string): string
+    public resolveApi(url: string): string
     {
-        return null;
+        return this._mapper.map(url);
+    }
+
+    public get registrations(): IApi[]
+    {
+        return this._mapper.entries().map(e => { return { urlPrefix: e.urlPrefix, tokenName: e.value}; });
     }
 }

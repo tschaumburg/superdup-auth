@@ -1,5 +1,5 @@
 ﻿import sdpAuthCore = require("superdup-auth-core");
-import { ILog } from "superdup-auth-log";
+import { ILog, ConsoleLog } from "superdup-auth-log";
 import { urlparse } from "superdup-auth-core";
 import { WebAuth, ParseHashError, TokenPayload } from "auth0-js";
 import auth0jscode = require("auth0-js");
@@ -8,13 +8,13 @@ import jwt_decode = require("jwt-decode");
 
 export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
 {
-    private log: ILog = console;
+    private log: ILog = ConsoleLog.Current;
     private webauth: WebAuth;
 
     public constructor(private readonly options: Auth0jsOptions, log: ILog)
     {
         if (!log)
-            log = console;
+            log = ConsoleLog.Current;
          
         this.log = log;
     }
@@ -129,7 +129,7 @@ export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
             },
             (err: ParseHashError, data: TokenPayload) =>
             {
-                this.log.trace("callback(data=" + JSON.stringify(data) + ")");
+                this.log.debug("callback(data=" + JSON.stringify(data) + ")");
 
                 // Handle errors:
                 if (!!err)

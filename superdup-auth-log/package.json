@@ -21,7 +21,7 @@
     "grunt-publish": "^1.0.0",
     "grunt-webpack": "^2.0.1",
     "typescript": "^2.1.5",
-    "uglifyjs-webpack-plugin": "^0.4.2",
+    "uglifyjs-webpack-plugin": "^0.4.3",
     "webpack": "^2.3.3"
   },
   "scripts": {

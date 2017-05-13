@@ -19,7 +19,7 @@ export interface IAuthService
     //* 
     //********************************************************************
     //getLoginNames(): string[];
-    getLogin(loginName: string): auth.ILogin;
+    getLogin(loginName: string): auth.ILogin2;
 
     //********************************************************************
     //* Resolving access tokens:
@@ -83,7 +83,7 @@ export class AuthService implements IAuthService
     //    return this.builder.getLoginNames();
     //}
 
-    public getLogin(loginName: string): auth.ILogin
+    public getLogin(loginName: string): auth.ILogin2
     {
         return this.authManager.getLogin(loginName);
     }

@@ -1,4 +1,5 @@
 export interface IApi
 {
-    unregister(): void;
+    urlPrefix: string;
+    tokenName: string;
 }

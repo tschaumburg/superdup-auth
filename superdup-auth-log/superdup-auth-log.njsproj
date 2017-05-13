@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4055a4b8-a333-409a-8dcb-1349a1ee266a}</ProjectGuid>
     <ProjectHome />
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <StartupFile />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -26,8 +26,12 @@
     <Folder Include="source\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="source\log.ts" />
     <TypeScriptCompile Include="source\ilog.ts" />
     <TypeScriptCompile Include="source\consolelog.ts" />
+    <TypeScriptCompile Include="source\ilogtarget.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="source\index.ts" />
   </ItemGroup>
   <ItemGroup>
