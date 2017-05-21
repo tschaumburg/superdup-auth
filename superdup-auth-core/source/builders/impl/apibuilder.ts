@@ -1,7 +1,7 @@
 //import { IApi} from "../apimanager";
-import { IToken, ITokenManager } from "../../tokenmanager";
+import { IToken, ITokenManager } from "superdup-auth-core-tokens";
 import { ILog } from "superdup-auth-log";
-import { IApiManager } from "../../apimanager";
+import { IApiManager } from "superdup-auth-core-apis";
 import { ILogin2 } from "../../login2";
 import { IApiBuilder, IApiTokenRequirement } from "../iapibuilder";
 

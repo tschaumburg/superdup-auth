@@ -3,33 +3,49 @@ import ng = require("angular");
 import router = require("angular-ui-router");
 import views = require("./views");
 
-export function config(
-    $stateProvider: ngui.IStateProvider,
-    $urlRouterProvider: ngui.IUrlRouterProvider,
-    $locationProvider: ng.ILocationProvider,
-	initialState: string = null
-)
-{
-    var viewBase = "views";
+var angular = require("angular");
 
-    // UI-Router config:
-    // =================
-    $urlRouterProvider.otherwise(initialState || '/landingpage');
+angular
+    .module('superdup.auth.ngdemo')
+    .config(
+    [
+        '$urlRouterProvider',
+        '$stateProvider',
+        'superdupAuthServiceProvider',
+        function (
+            $urlRouterProvider: ng.ui.IUrlRouterProvider,
+            $stateProvider: ng.ui.IStateProvider,
+            $locationProvider: ng.ILocationProvider
+        )
+        {
 
-    $stateProvider
-        .state('landingpage', {
-            url: '/landingpage',
-            templateUrl: viewBase + '/landingpage.html',
-            controller: 'LandingPageController'
-        })
-        .state('adminpage', {
-            url: '/adminpage',
-            templateUrl: viewBase + '/adminpage.html',
-            controller: 'AdminController'
-        })
-        .state('userpage', {
-            url: "/userpage",
-            templateUrl: viewBase + "/userpage.html",
-            controller: 'UserController'
-        });
-}
+            // UI-Router config:
+            // =================
+            $urlRouterProvider.otherwise('/initializing');
+
+            var viewBase = "views";
+            $stateProvider
+                .state('initializing', {
+                    url: '/initializing',
+                    templateUrl: viewBase + '/initializing.html',
+                    controller: 'InitializingController'
+                })
+                .state('login', {
+                    url: '/login',
+                    templateUrl: viewBase + '/login.html',
+                    controller: 'LoginController'
+                })
+                .state('error', {
+                    url: '/error',
+                    templateUrl: viewBase + '/error.html',
+                    controller: 'ErrorController'
+                })
+                .state('userpage', {
+                    url: "/userpage",
+                    templateUrl: viewBase + "/userpage.html",
+                    controller: 'UserPageController'
+                });
+        }
+    ]
+);
+

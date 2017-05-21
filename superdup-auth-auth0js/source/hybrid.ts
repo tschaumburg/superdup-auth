@@ -1,12 +1,13 @@
 ﻿import sdpAuthCore = require("superdup-auth-core");
 import { ILog, ConsoleLog } from "superdup-auth-log";
 import { urlparse } from "superdup-auth-core";
+import { IHybridProvider } from "superdup-auth-core-providers";
 import { WebAuth, ParseHashError, TokenPayload } from "auth0-js";
 import auth0jscode = require("auth0-js");
 import { Auth0jsOptions, AuthFlow } from "./options";
 import jwt_decode = require("jwt-decode");
 
-export class Auth0Hybrid implements sdpAuthCore.IHybridProvider
+export class Auth0Hybrid implements IHybridProvider
 {
     private log: ILog = ConsoleLog.Current;
     private webauth: WebAuth;

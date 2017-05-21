@@ -4,8 +4,8 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports = function (grunt) {
     //Add all plugins that your project needs here
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-publish');
-    grunt.loadNpmTasks('grunt-bump');
+    //grunt.loadNpmTasks('grunt-publish');
+    //grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-webpack');
     //grunt.loadNpmTasks('grunt-npm-command'); // DON'T USE => MAX_PATH error
 
@@ -20,7 +20,19 @@ module.exports = function (grunt) {
         webpack: {
             options: {
                 entry: './dist/index.js',
+                stats: {
+                    colors: false,
+                    modules: true,
+                    reasons: false
+                },
+                progress: true,
+                failOnError: true,
                 externals: {
+                    'jwt-decode': 'jwt-decode',
+                    'superdup-auth-core-providers': 'superdup-auth-core-providers',
+                    'superdup-auth-core-login': 'superdup-auth-core-login',
+                    'superdup-auth-core-tokens': 'superdup-auth-core-tokens',
+                    'superdup-auth-core-apis': 'superdup-auth-core-apis',
                     'superdup-auth-log': 'superdup-auth-log'
                 }
             },
@@ -28,7 +40,8 @@ module.exports = function (grunt) {
                 output: {
                     path: path.resolve(__dirname, './dist'),
                     filename: 'superdup-auth-core-min.js',
-                    library: 'sdpAuthCore'
+                    //library: 'sdpAuthCore',
+                    libraryTarget: 'commonjs'
                 },
                 plugins: [
                     new UglifyJSPlugin()
@@ -84,6 +97,7 @@ module.exports = function (grunt) {
         'postbuild',
         [
             'webpack:debug',
+            'webpack:prod',
             //'bump:prerelease',
             //'publish'
         ]

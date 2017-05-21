@@ -1,6 +1,6 @@
 import { ILog } from "superdup-auth-log";
 //import { IAuthCodeLogin } from "../../loginmanager";
-import { IToken, ITokenManager, ITokenProvider } from "../../tokenmanager";
+import { IToken, ITokenManager, ITokenProvider } from "superdup-auth-core-tokens";
 //import { IApiManager } from "../../apimanager";
 import { ITokenBuilder } from "../itokenbuilder";
 

@@ -8,9 +8,7 @@
     "dist/"
   ],
   "dependencies": {
-    "@types/jwt-decode": "^1.4.28",
-    "jwt-decode": "^2.1.0",
-    "strongly-typed-events": "^1.0.1"
+    "jwt-decode": "^2.1.0"
   },
   "devDependencies": {
     "@types/node": "^7.0.1",

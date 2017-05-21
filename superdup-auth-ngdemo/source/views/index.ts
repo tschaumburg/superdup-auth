@@ -1,8 +1,8 @@
-﻿import lp = require("./landingpage");
-import angular = require("angular");
+﻿import angular = require("angular");
 
 angular
     .module('superdup.auth.ngdemo')
-    .controller('LandingPageController', ["$scope", "superdupAuthService", require("./landingpage")])
-    .controller('AdminPageController', ["$scope", require("./adminpage")])
-    .controller('UserPageController', ["$scope", require("./userpage")]);
+    .controller('InitializingController', ["$scope", require("./initializing")])
+    .controller('LoginController', ["$scope", "$state", "superdupAuthService", require("./login")])
+    .controller('ErrorController', ["$scope", require("./error")])
+    .controller('UserPageController', ["$scope", "superdupAuthService", require("./userpage")]);

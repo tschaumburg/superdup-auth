@@ -8,7 +8,6 @@
     "dist/"
   ],
   "dependencies": {
-    "@types/node": "^7.0.2",
     "angular": "^1.6.1"
   },
   "devDependencies": {

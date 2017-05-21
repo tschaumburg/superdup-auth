@@ -1,5 +1,5 @@
 import { ILog } from "superdup-auth-log";
-import { IToken } from "../tokenmanager";
+import { IToken } from "superdup-auth-core-tokens";
 import { ILogin2 } from "../login2";
 import { ILoginBuilder } from "./iloginbuilder";
 

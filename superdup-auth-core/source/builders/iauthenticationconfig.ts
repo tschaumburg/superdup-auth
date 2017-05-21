@@ -1,8 +1,9 @@
-﻿import { IImplicitProvider, IHybridProvider } from "../providermanager";
+﻿import { IImplicitProvider, IHybridProvider } from "superdup-auth-core-providers";
 import { ITImplicitLoginBuilder } from "./iimplicitloginbuilder";
 import { ITHybridLoginBuilder } from "./ihybridloginbuilder";
 import { IApiBuilder } from "./iapibuilder";
 import { ITokenBuilder } from "./itokenbuilder";
+import { IAuthenticationManager } from "../iauthenticationmanager";
 
 
 export interface IAuthenticationConfig
@@ -42,17 +43,18 @@ export interface IAuthenticationConfig
 
 import { ILog } from "superdup-auth-log";
 
-import { IApiManager } from "../apimanager";
-import { ILoginManager } from "../loginmanager";
-import { ITokenManager } from "../tokenmanager";
+import { IApiManager } from "superdup-auth-core-apis";
+import { ILoginManager } from "superdup-auth-core-login";
+import { ITokenManager } from "superdup-auth-core-tokens";
 
 import { AuthenticationConfig } from "./impl/authenticationconfig";
 export function createConfigBuilder(
     log: ILog,
     loginManager: ILoginManager,
     tokenManager: ITokenManager,
-    apiManager: IApiManager
+    apiManager: IApiManager,
+    authenticationManager: IAuthenticationManager
 ): IAuthenticationConfig
 {
-    return new AuthenticationConfig(log, loginManager, tokenManager, apiManager);
+    return new AuthenticationConfig(log, loginManager, tokenManager, apiManager, authenticationManager);
 }

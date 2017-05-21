@@ -1,4 +1,4 @@
-import { IToken } from "../tokenmanager";
+import { IToken } from "superdup-auth-core-tokens";
 
 export interface ITokenBuilder
 {

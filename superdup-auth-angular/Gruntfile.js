@@ -20,6 +20,11 @@ module.exports = function (grunt)
                 entry: './dist/index.js',
                 externals: {
                     'superdup-auth-core': 'superdup-auth-core',
+                    'superdup-auth-core-providers': 'superdup-auth-core-providers',
+                    'superdup-auth-core-login': 'superdup-auth-core-login',
+                    'superdup-auth-core-tokens': 'superdup-auth-core-tokens',
+                    'superdup-auth-core-apis': 'superdup-auth-core-apis',
+                    'superdup-auth-log': 'superdup-auth-log',
                     'angular': 'angular'
                 }
             },

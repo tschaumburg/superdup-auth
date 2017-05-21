@@ -26,9 +26,6 @@
     <Content Include="source\flows.md" />
     <Content Include="tsconfig.json" />
     <Compile Include="Gruntfile.js" />
-    <TypeScriptCompile Include="source\apimanager\iapimanager.ts" />
-    <TypeScriptCompile Include="source\apimanager\apimanager.ts" />
-    <TypeScriptCompile Include="source\apimanager\iapi.ts" />
     <TypeScriptCompile Include="source\builders\impl\apibuilder.ts" />
     <TypeScriptCompile Include="source\builders\impl\authenticationconfig.ts" />
     <TypeScriptCompile Include="source\builders\iauthcodeloginbuilder.ts" />
@@ -45,80 +42,22 @@
     <TypeScriptCompile Include="source\login2.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="source\loginmanager\builders\ihybrid.ts" />
-    <TypeScriptCompile Include="source\loginmanager\builders\iimplicit.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="source\loginmanager\builders\impl\hybrid.ts" />
-    <TypeScriptCompile Include="source\loginmanager\builders\impl\implicit.ts" />
-    <TypeScriptCompile Include="source\loginmanager\builders\impl\index.ts" />
-    <TypeScriptCompile Include="source\loginmanager\builders\index.ts" />
-    <TypeScriptCompile Include="source\loginmanager\builders\imanager.ts" />
     <TypeScriptCompile Include="source\iauthenticationmanager.ts" />
-    <TypeScriptCompile Include="source\loginmanager\ihybridlogin.ts" />
-    <TypeScriptCompile Include="source\loginmanager\iauthcodelogin.ts" />
-    <TypeScriptCompile Include="source\loginmanager\iimplicitlogin.ts" />
-    <TypeScriptCompile Include="source\loginmanager\ilogin.ts" />
-    <TypeScriptCompile Include="source\loginmanager\builders\impl\manager.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="source\datastore\datastore.ts" />
-    <TypeScriptCompile Include="source\datastore\index.ts" />
-    <TypeScriptCompile Include="source\datastore\istorage.ts" />
-    <TypeScriptCompile Include="source\loginmanager\impl\userstore.ts" />
-    <TypeScriptCompile Include="source\providermanager\iauthcode.ts" />
-    <TypeScriptCompile Include="source\tokenmanager\impl\token.ts" />
-    <TypeScriptCompile Include="source\tokenmanager\itoken.ts" />
     <TypeScriptCompile Include="source\utils\asciitable.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="source\utils\index.ts" />
-    <TypeScriptCompile Include="source\loginmanager\iloginmanager.ts" />
     <TypeScriptCompile Include="source\utils\tokenutils.ts" />
-    <TypeScriptCompile Include="source\loginmanager\index.ts" />
-    <TypeScriptCompile Include="source\providermanager\flowhelper.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="source\providermanager\ihybrid.ts" />
-    <TypeScriptCompile Include="source\providermanager\ibase.ts" />
-    <TypeScriptCompile Include="source\providermanager\manager.ts" />
-    <TypeScriptCompile Include="source\providermanager\index.ts" />
-    <TypeScriptCompile Include="source\providermanager\imanager.ts" />
     <TypeScriptCompile Include="source\authenticationmanager.ts" />
-    <TypeScriptCompile Include="source\providermanager\iimplicit.ts" />
-    <TypeScriptCompile Include="source\loginmanager\impl\loginmanager.ts" />
     <TypeScriptCompile Include="source\index.ts" />
-    <TypeScriptCompile Include="source\loginmanager\impl\login.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="source\tokenmanager\impl\index.ts" />
-    <TypeScriptCompile Include="source\tokenmanager\index.ts" />
-    <TypeScriptCompile Include="source\tokenmanager\itokenprovider.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="source\tokenmanager\impl\tokenmanager.ts" />
-    <TypeScriptCompile Include="source\tokenmanager\itokenmanager.ts" />
-    <TypeScriptCompile Include="source\tokenmanager\impl\tokenstore.ts" />
-    <TypeScriptCompile Include="source\apimanager\index.ts" />
-    <TypeScriptCompile Include="source\apimanager\urlmapper.ts" />
     <TypeScriptCompile Include="source\utils\urlutils.ts" />
-    <TypeScriptCompile Include="source\userinfo.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="grunt\" />
     <Folder Include="source" />
     <Folder Include="source\builders\impl\" />
-    <Folder Include="source\loginmanager\builders\impl\" />
-    <Folder Include="source\datastore\" />
     <Folder Include="source\builders\" />
     <Folder Include="source\utils\" />
-    <Folder Include="source\loginmanager\" />
-    <Folder Include="source\loginmanager\impl\" />
-    <Folder Include="source\tokenmanager\" />
-    <Folder Include="source\apimanager\" />
-    <Folder Include="source\providermanager\" />
-    <Folder Include="source\loginmanager\builders\" />
-    <Folder Include="source\tokenmanager\impl\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

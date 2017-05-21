@@ -21,7 +21,9 @@ module.exports = function (grunt)
                 entry: './dist/index.js',
                 externals: {
                     'superdup-auth-core': 'superdup-auth-core',
-                    'oidc-client': 'Oidc'
+                    'superdup-auth-core-providers': 'superdup-auth-core-providers',
+                    'superdup-auth-log': 'superdup-auth-log',
+                    'oidc-client': 'oidc-client'
                 }
             },
             prod: {

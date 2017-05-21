@@ -3,9 +3,10 @@ import { ILog, ConsoleLog } from "superdup-auth-log";
 import { WebAuth, ParseHashError, TokenPayload } from "auth0-js";
 import auth0jscode = require("auth0-js");
 import { Auth0jsOptions, AuthFlow } from "./options";
+import { IImplicitProvider, ImplicitSuccess, ImplicitRedirecting, ImplicitFailure, FlowHelper, AccessTokenInfo, UserInfo } from "superdup-auth-core-providers";
 import jwt_decode = require("jwt-decode");
 
-export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
+export class Auth0Implicit implements IImplicitProvider
 {
     private log: ILog = ConsoleLog.Current;
 
@@ -40,22 +41,22 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
         encodedState: string,
         idScopes: string[],
         accessToken: { name: string, resource: string, scopes: string[] },
-        success: sdpAuthCore.ImplicitSuccess,
-        redirecting: sdpAuthCore.ImplicitRedirecting,
-        error: sdpAuthCore.ImplicitFailure
+        success: ImplicitSuccess,
+        redirecting: ImplicitRedirecting,
+        error: ImplicitFailure
     ): void
     {
         var domain = this.options && this.options.domain;
         var clientId = this.options && this.options.clientId && this.options.clientId.substr(8);
 
-        var requestInfo =
-            sdpAuthCore.FlowHelper.ImplicitInfo(
-                ['profile'],
-                {
-                    api_resource: accessToken.resource,
-                    api_scopes: accessToken.scopes
-                }
-            );
+        var at: AccessTokenInfo = null;
+        if (!!accessToken)
+            at = {
+                api_resource: accessToken.resource,
+                api_scopes: accessToken.scopes
+            };;
+
+        var requestInfo = FlowHelper.ImplicitInfo( ['profile'], at);
 
         this.log.info(
             "webauth.authorize(" +
@@ -97,7 +98,7 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
     public handleRedirect(
         actualRedirectUrl: string,
         nonce: string,
-        success: (user: sdpAuthCore.UserInfo, accessToken: string, refreshToken: string) => void,
+        success: (user: UserInfo, accessToken: string, refreshToken: string) => void,
         error: (reason: any) => void
     ): void 
     {
@@ -183,7 +184,7 @@ export class Auth0Implicit implements sdpAuthCore.IImplicitProvider
         );
     };
 
-    private mapUser(idtoken: string, src: auth0jscode.UserInfo): sdpAuthCore.UserInfo
+    private mapUser(idtoken: string, src: auth0jscode.UserInfo): UserInfo
     {
         if (!src)
             return null;

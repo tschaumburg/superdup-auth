@@ -20,7 +20,9 @@ module.exports = function (grunt)
             options: {
                 entry: './dist/index.js',
                 externals: {
-                    'superdup-auth-core': 'superdup-auth-core',
+                    'superdup-auth-core-providers': 'superdup-auth-core-providers',
+                    'superdup-auth-log': 'superdup-auth-log',
+                    'jwt-decode': 'jwt-decode',
                     'auth0-js': 'auth0-js'
                 }
             },

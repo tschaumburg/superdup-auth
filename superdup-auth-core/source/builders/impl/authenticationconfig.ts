@@ -1,13 +1,13 @@
 ﻿import { ILog } from "superdup-auth-log";
 //import { ILogin, IHybridLogin } from "./loginmanager";
-import { IImplicitProvider, IHybridProvider } from "../../providermanager";
-import { UserInfo } from "../../userinfo";
+import { IImplicitProvider, IHybridProvider } from "superdup-auth-core-providers";
+import { UserInfo } from "superdup-auth-core-providers";
 
-import { IApiManager, IApi } from "../../apimanager";
+import { IApiManager, IApi } from "superdup-auth-core-apis";
 import { IAuthenticationConfig } from "../iauthenticationconfig";
-import { IProviderManager } from "../../providermanager";
-import { ILogin, ILoginManager } from "../../loginmanager";
-import { IToken, ITokenManager, ITokenProvider } from "../../tokenmanager";
+import { IProviderManager } from "superdup-auth-core-providers";
+import { ILogin, ILoginManager } from "superdup-auth-core-login";
+import { IToken, ITokenManager, ITokenProvider } from "superdup-auth-core-tokens";
 
 import { IApiBuilder } from "../iapibuilder";
 import { ApiBuilder } from "./apibuilder";
@@ -20,6 +20,7 @@ import { TImplicitLoginBuilder, ImplicitLoginBuilder } from "./implicitloginbuil
 
 import { ITHybridLoginBuilder, IHybridLoginBuilder } from "../ihybridloginbuilder";
 import { THybridLoginBuilder, HybridLoginBuilder } from "./hybridloginbuilder";
+import { IAuthenticationManager } from "../../iauthenticationmanager";
 //import { TokenBuilder, ApiBuilder } from "../ihybridloginbuilder";
 
 import { AsciiTable } from "../../utils";
@@ -33,7 +34,8 @@ export class AuthenticationConfig implements IAuthenticationConfig
         private readonly _log: ILog,
         private readonly _loginManager: ILoginManager,
         private readonly _tokenManager: ITokenManager,
-        private readonly _apiManager: IApiManager
+        private readonly _apiManager: IApiManager,
+        private readonly _authenticationManager: IAuthenticationManager
     )
     {
         //var provider = createProviderManager();
@@ -51,14 +53,14 @@ export class AuthenticationConfig implements IAuthenticationConfig
         flow: new (args: TOptions, log: ILog) => IImplicitProvider
     ): ITImplicitLoginBuilder<TOptions>
     {
-        return new TImplicitLoginBuilder<TOptions>(this._loginManager, this._tokenManager, flow);
+        return new TImplicitLoginBuilder<TOptions>(this._loginManager, this._tokenManager, this._authenticationManager, flow);
     }
 
     public hybridLogin<TOptions>(
         flow: new (args: TOptions, log: ILog) => IHybridProvider
     ): ITHybridLoginBuilder<TOptions>
     {
-        return new THybridLoginBuilder<TOptions>(this._loginManager, this._tokenManager, flow);
+        return new THybridLoginBuilder<TOptions>(this._loginManager, this._tokenManager, this._authenticationManager, flow);
     }
 
     //********************************************************************

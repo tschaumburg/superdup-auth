@@ -14,8 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "auth0-js": "^8.1.3",
-    "jwt-decode": "^2.1.0",
-    "superdup-auth-core": "^*"
+    "jwt-decode": "^2.1.0"
   },
   "devDependencies": {
     "@types/jwt-decode": "^1.4.28",

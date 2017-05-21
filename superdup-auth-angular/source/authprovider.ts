@@ -4,20 +4,13 @@ import auth = require("superdup-auth-core");
 import service = require('./authservice');
 
 import { IAuthenticationConfig, IAuthenticationManager, createAuthenticationManager } from "superdup-auth-core";
-import { ILog, ConsoleLog, createLog } from "superdup-auth-log"; 
+import { ILog, ConsoleLog, ConsoleTarget, createLog } from "superdup-auth-log"; 
 import { ILogServiceProvider } from "./logprovider"; 
 
 export interface IAuthServiceProvider extends angular.IServiceProvider
 {
-    //initLog(log: ILog): IAuthServiceProvider;
     readonly config: IAuthenticationConfig;
-    handleRedirect(
-        url: string,
-        success: (userdata: any) => void,
-        error: (reason: string) => void
-    ): any;
 }
-
 
 export class AuthServiceProvider implements IAuthServiceProvider
 {
@@ -27,7 +20,7 @@ export class AuthServiceProvider implements IAuthServiceProvider
     constructor(_logProvider: ILogServiceProvider)
     {
         this._log = _logProvider.log.sublog("auth");
-        this._authManager = createAuthenticationManager(this._log);
+        this._authManager = createAuthenticationManager(new ConsoleTarget());// this._log);
     }
 
     public get config(): IAuthenticationConfig
@@ -54,27 +47,5 @@ export class AuthServiceProvider implements IAuthServiceProvider
                 this._log
             );
         }];
-
-    public handleRedirect(
-        url: string,
-        success: (userdata: any) => void,
-        error: (reason: string) => void
-    ): any 
-    {
-        return this._authManager.handleRedirect(
-            url,
-            (loginName, user, state) =>
-            {
-                if (!!success)
-                    success(state);
-            },
-            () => { },
-            (loginName, reason, state) =>
-            {
-                if (!!error)
-                    error(reason);
-            }
-        );
-    }
 }
 

@@ -1,17 +1,13 @@
 ﻿export { ILog, ConsoleLog, ILogTarget } from "superdup-auth-log";
 
-export { IBaseProvider, IImplicitProvider, ImplicitSuccess, ImplicitFailure, ImplicitRedirecting, IHybridProvider } from "./providermanager";
-export { FlowHelper, RequestInfo, AccessTokenInfo } from "./providermanager";
+//export { IBaseProvider, IImplicitProvider, ImplicitSuccess, ImplicitFailure, ImplicitRedirecting, IHybridProvider } from "superdup-auth-core-providers";
+//export { FlowHelper, RequestInfo, AccessTokenInfo } from "superdup-auth-core-providers";
 
-export { UserInfo } from "./userinfo";
-//export { IBuilderManager, IImplicitBuilder } from "./loginmanager/builders"; 
-//export { ILogin } from "./loginmanager";
+export { UserInfo } from "superdup-auth-core-providers";
 export { ILogin2 } from "./login2";
-export { IToken } from "./tokenmanager";
+export { IToken } from "superdup-auth-core-tokens";
 export { IAuthenticationConfig } from "./builders/iauthenticationconfig";
 export { IAuthenticationManager } from "./iauthenticationmanager";
 export { createAuthenticationManager } from "./authenticationmanager";
-
-//export { createBuilderManager } from "./loginmanager/builders/impl";
 
 export { UrlParts, urlparse} from "./utils";

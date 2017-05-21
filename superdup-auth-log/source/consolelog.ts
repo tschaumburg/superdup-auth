@@ -18,7 +18,7 @@ export class ConsoleLog
     }
 }
 
-class ConsoleTarget implements ILogTarget
+export class ConsoleTarget implements ILogTarget
 {
     //constructor(private readonly _console: ILog, private readonly _prefix: string = "") { }
 
