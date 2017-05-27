@@ -1,7 +1,7 @@
 ﻿import { UserInfo } from "superdup-auth-core-providers";
 import { IToken } from "superdup-auth-core-tokens";
 
-import { ILogin } from "superdup-auth-core-login";
+import { ILoginManager } from "superdup-auth-core-login";
 import { ITokenManager } from "superdup-auth-core-tokens";
 
 export interface ILogin2
@@ -21,7 +21,8 @@ export interface ILogin2
 export class Login2 implements ILogin2
 {
     constructor(
-        private readonly _login: ILogin,
+        private readonly _loginName: string,
+        private readonly _loginManager: ILoginManager,
         //private readonly defaultAccessToken: IToken,
         private readonly _tokenMgr: ITokenManager,
         private _onLoginSuccess: (userstate: any) => void,
@@ -46,7 +47,8 @@ export class Login2 implements ILogin2
         userstate: any = null
     ): void
     {
-        this._login.login(
+        this._loginManager.login(
+            this._loginName,
             userstate,
             this._onLoginSuccess,
             null,
@@ -56,7 +58,7 @@ export class Login2 implements ILogin2
 
     public logout(): void
     {
-        this._login.logout();
+        this._loginManager.logout(this._loginName);
 
         if (!!this._onLogout)
             this._onLogout();
@@ -64,11 +66,11 @@ export class Login2 implements ILogin2
 
     public get user(): UserInfo
     {
-        return this._login.user;
+        return this._loginManager.getUser(this._loginName);
     }
 
     public get tokens(): IToken[]
     {
-        return this._tokenMgr.tokensByProvider(this._login.name);
+        return this._tokenMgr.tokensByProvider(this._loginName);
     }
 }

@@ -1,5 +1,5 @@
 import { ILog } from "superdup-auth-log";
-import { ILoginManager, IHybridLogin } from "superdup-auth-core-login";
+import { ILoginManager } from "superdup-auth-core-login";
 import { IHybridProvider } from "superdup-auth-core-providers";
 import { IToken, ITokenManager, ITokenProvider } from "superdup-auth-core-tokens";
 import { IAuthenticationManager } from "../../iauthenticationmanager";
@@ -117,22 +117,21 @@ export class HybridLoginBuilder implements IHybridLoginBuilder
 
     public registerAs(name: string): ILogin2 // IHybridLogin
     {
-        var login =
-            this._loginManager
-                .createHybridLogin(
-                name,
-                this.flow,
-                this.idScopes,
-                this.requestAccessToken,
-                this.requestRefreshToken
-                );
+        this._loginManager
+            .defineHybridLogin(
+            name,
+            this.flow,
+            this.idScopes,
+            this.requestAccessToken,
+            this.requestRefreshToken
+            );
 
         var provider: ITokenProvider =
             {
-                providerId: login.name,
-                provideTokenValue: (res, scp, success, error) => { success(login.implicitTokenValue); },
-                loggedIn: login.loggedIn,
-                loggingOut: login.loggingOut
+                providerId: name,
+                provideTokenValue: (res, scp, success, error) => { this._loginManager.acquireAccessToken(name, res, scp, success, error); }
+                //loggedIn: login.loggedIn,
+                //loggingOut: login.loggingOut
             };
 
         var defaultAccessToken = this._tokenManager.registerToken(name, this.requestAccessToken.resource, this.requestAccessToken.scopes);//, provider);
@@ -146,7 +145,7 @@ export class HybridLoginBuilder implements IHybridLoginBuilder
         //}
 
         //return new Login2(login, defaultAccessToken, this._tokenManager);
-        var login2 = new Login2(login, this._tokenManager, this._onLoginSuccess, this._onLoginError, this._onLogout, this._onLoadedFromCache);
+        var login2 = new Login2(name, this._loginManager, this._tokenManager, this._onLoginSuccess, this._onLoginError, this._onLogout, this._onLoadedFromCache);
         this._authenticationManager.registerLogin(name, login2);
 
         return login2;

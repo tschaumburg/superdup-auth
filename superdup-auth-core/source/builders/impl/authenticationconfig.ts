@@ -6,7 +6,7 @@ import { UserInfo } from "superdup-auth-core-providers";
 import { IApiManager, IApi } from "superdup-auth-core-apis";
 import { IAuthenticationConfig } from "../iauthenticationconfig";
 import { IProviderManager } from "superdup-auth-core-providers";
-import { ILogin, ILoginManager } from "superdup-auth-core-login";
+import { ILoginManager } from "superdup-auth-core-login";
 import { IToken, ITokenManager, ITokenProvider } from "superdup-auth-core-tokens";
 
 import { IApiBuilder } from "../iapibuilder";
@@ -120,8 +120,7 @@ export class AuthenticationConfig implements IAuthenticationConfig
                 continue;
             verifiedProviderIds.push(token.providerId);
 
-            var login = this._loginManager.getLogin(token.providerId);
-            if (!login)
+            if (this._loginManager.loginNames.indexOf(token.providerId) < 0)
             {
                 errors.push("Undefined login: login name " + token.providerId + " (providing token " + token.tokenName + ") is not defined");
                 continue;
@@ -175,12 +174,12 @@ export class AuthenticationConfig implements IAuthenticationConfig
     {
         var apis = this._apiManager.registrations;
         var tokens = this._tokenManager.tokenNames.map((tokenname) => this._tokenManager.tokenByName(tokenname));
-        var logins = this._loginManager.loginNames.map((loginname) => this._loginManager.getLogin(loginname));
+        var logins = this._loginManager.loginNames;//.map((loginname) => this._loginManager.getLogin(loginname));
 
         var apis_tokens_logins =
             Query
                 .OuterJoin(apis, tokens, (api, token) => api.tokenName === token.tokenName)
-                .OuterJoin(logins, (api, token, login) => token.providerId === login.name)
+                .OuterJoin(logins, (api, token, login) => token.providerId === login)
                 .Select((api, token, login) => { return { api: api, token: token, login: login }; });
 
         var stateTable = new AsciiTable(20, 12, 12, 18, 25, 12, 12, 12, 40);
@@ -241,7 +240,7 @@ export class AuthenticationConfig implements IAuthenticationConfig
             if (!!line.login)
             {
                 stateTable
-                    .AddCell(line.login.name)
+                    .AddCell(line.login)
                     .AddCell("?")
                     .AddCell("?");
             }

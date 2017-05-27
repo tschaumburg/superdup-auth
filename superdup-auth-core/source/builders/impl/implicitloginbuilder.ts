@@ -1,5 +1,5 @@
 import { ILog } from "superdup-auth-log";
-import { ILoginManager, IImplicitLogin, IHybridLogin } from "superdup-auth-core-login";
+import { ILoginManager } from "superdup-auth-core-login";
 import { IHybridProvider, IImplicitProvider } from "superdup-auth-core-providers";
 import { IToken, ITokenManager } from "superdup-auth-core-tokens";
 import { IAuthenticationManager } from "../../iauthenticationmanager";
@@ -98,14 +98,14 @@ export class ImplicitLoginBuilder implements IImplicitLoginBuilder
     {
         var login =
             this._loginManager
-                .createImplicitLogin(
+                .defineImplicitLogin(
                 name,
                 (log: ILog) => { return this.flow(log); },
                 this.idScopes,
                 this.requestAccessToken
                 );
 
-        var login2 = new Login2(login, this._tokenManager, this._onLoginSuccess, this._onLoginError, this._onLogout, this._onLoadedFromCache);
+        var login2 = new Login2(name, this._loginManager, this._tokenManager, this._onLoginSuccess, this._onLoginError, this._onLogout, this._onLoadedFromCache);
         this._authenticationManager.registerLogin(name, login2);
 
         return login2;

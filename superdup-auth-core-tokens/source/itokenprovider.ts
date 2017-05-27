@@ -11,6 +11,6 @@ export interface ITokenProvider
         error: (reason: any) => void
     ): void;
 
-    readonly loggedIn: IEvent;
-    readonly loggingOut: IEvent;
+    //readonly loggedIn: IEvent;
+    //readonly loggingOut: IEvent;
 }

@@ -32,29 +32,29 @@ export class Token implements IToken
         if (value == this._provider)
             return;
 
-        if (!!this._provider)
-        {
-            var self = this;
-            this.provider.loggingOut.unsubscribe(
-                () =>
-                {
-                    self.clearValue();
-                }
-            );
-        }
+        //if (!!this._provider)
+        //{
+        //    var self = this;
+        //    this.provider.loggingOut.unsubscribe(
+        //        () =>
+        //        {
+        //            self.clearValue();
+        //        }
+        //    );
+        //}
 
         this._provider = value;
 
-        if (!!this._provider)
-        {
-            var self = this;
-            this.provider.loggingOut.subscribe(
-                () =>
-                {
-                    self.clearValue();
-                }
-            );
-        }
+        //if (!!this._provider)
+        //{
+        //    var self = this;
+        //    this.provider.loggingOut.subscribe(
+        //        () =>
+        //        {
+        //            self.clearValue();
+        //        }
+        //    );
+        //}
     }
 
     _tokenValue: string = null;
@@ -119,7 +119,7 @@ export class Token implements IToken
         this.tokenStore.saveToken(this.tokenName, this._tokenValue);
     }
 
-    private clearValue(): void
+    public clearValue(): void
     {
         this.log.debug("Clearing access token " + this.tokenName);
 

@@ -45,17 +45,10 @@
     <Folder Include="source\impl\datastore\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="source\iauthcodelogin.ts" />
-    <TypeScriptCompile Include="source\ievent.ts" />
-    <TypeScriptCompile Include="source\ihybridlogin.ts" />
-    <TypeScriptCompile Include="source\iimplicitlogin.ts" />
-    <TypeScriptCompile Include="source\ilogin.ts" />
     <TypeScriptCompile Include="source\iloginmanager.ts" />
     <TypeScriptCompile Include="source\impl\datastore\datastore.ts" />
     <TypeScriptCompile Include="source\impl\datastore\index.ts" />
     <TypeScriptCompile Include="source\impl\datastore\istorage.ts" />
-    <TypeScriptCompile Include="source\impl\event.ts" />
-    <TypeScriptCompile Include="source\impl\login.ts" />
     <TypeScriptCompile Include="source\impl\loginmanager.ts" />
     <TypeScriptCompile Include="source\impl\tokenutils.ts" />
     <TypeScriptCompile Include="source\impl\urlutils.ts" />

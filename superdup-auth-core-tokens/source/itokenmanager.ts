@@ -16,6 +16,8 @@ export interface ITokenManager
         providedBy: ITokenProvider
     ): void;
 
+    deregisterProvider(providerId: string): void;
+
     readonly tokenNames: string[];
 
     tokenByName(

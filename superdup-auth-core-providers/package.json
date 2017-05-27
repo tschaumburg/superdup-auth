@@ -1,34 +1,34 @@
 {
-  "name": "superdup-auth-core-providers",
-  "version": "0.0.1",
-  "description": "superdup-auth-core-providers",
-  "main": "dist/superdup-auth-core-providers.js",
-  "types": "dist/index",
-  "files": [
-    "dist/"
-  ],
-  "author": {
-    "name": "Thomas"
-  },
+    "name": "superdup-auth-core-providers",
+    "version": "1.0.0-alpha.1",
+    "description": "superdup-auth-core-providers",
+    "main": "dist/superdup-auth-core-providers.js",
+    "types": "dist/index",
+    "files": [
+        "dist/"
+    ],
+    "author": {
+        "name": "Thomas"
+    },
     "dependencies": {
         "jwt-decode": "^2.1.0"
     },
     "peerDependencies": {
         "superdup-auth-log": ">0.0.0"
     },
-  "devDependencies": {
-    "@types/node": "^7.0.1",
-    "babel": "^6.5.2",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-stage-2": "^6.22.0",
-    "grunt": "^1.0.1",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-uglify": "^2.0.0",
-    "grunt-webpack": "^2.0.1",
-    "strongly-typed-events": "^1.0.1",
-    "typescript": "^2.1.5",
-    "uglifyjs-webpack-plugin": "^0.4.3",
-    "webpack": "^2.5.1"
-  }
+    "devDependencies": {
+        "@types/node": "^7.0.1",
+        "babel": "^6.5.2",
+        "babel-preset-es2015": "^6.22.0",
+        "babel-preset-stage-2": "^6.22.0",
+        "grunt": "^1.0.1",
+        "grunt-cli": "^1.2.0",
+        "grunt-contrib-clean": "^1.1.0",
+        "grunt-contrib-uglify": "^2.0.0",
+        "grunt-webpack": "^2.0.1",
+        "strongly-typed-events": "^1.0.1",
+        "typescript": "^2.1.5",
+        "uglifyjs-webpack-plugin": "^0.4.3",
+        "webpack": "^2.5.1"
+    }
 }

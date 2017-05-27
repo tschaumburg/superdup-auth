@@ -74,7 +74,6 @@ class AccessTokenManager implements ITokenManager
         return res;
     }
 
-
     private loadState(log: ILog)
     {
         log.info("Reloading persisted authentication state...");
@@ -169,6 +168,24 @@ class AccessTokenManager implements ITokenManager
         }
 
         token.provider = providedBy;
+    }
+
+    public deregisterProvider(providerId: string): void
+    {
+        for (var tokenName in this._tokens)
+        {
+            var token = this._tokens[tokenName];
+            if (!token)
+                continue;
+            if (!token.provider)
+                continue;
+
+            if (providerId === token.provider.providerId)
+            {
+                token.clearValue();
+                token.provider = null;
+            }
+        }
     }
 
     public registerToken(

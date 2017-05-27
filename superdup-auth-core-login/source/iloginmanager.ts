@@ -1,49 +1,74 @@
 ﻿import { ILog } from "superdup-auth-log"; 
-import { ILogin } from "./ilogin";
-import { IImplicitLogin } from "./iimplicitlogin";
-import { IHybridLogin } from "./ihybridlogin";
-import { IAuthCodeLogin } from "./iauthcodelogin";
+//import { ILogin } from "./ilogin";
+//import { IImplicitLogin } from "./iimplicitlogin";
+//import { IHybridLogin } from "./ihybridlogin";
+//import { IAuthCodeLogin } from "./iauthcodelogin";
 import { UserInfo } from "superdup-auth-core-providers";
 import { IImplicitProvider, IHybridProvider, IAuthcodeProvider, IProviderManager } from "superdup-auth-core-providers"; 
 
 export interface ILoginManager
 {
     //********************************************************************
-    //* Logins:
-    //* ===================
+    //* Defining the logins:
+    //* ====================
     //* 
     //* 
     //********************************************************************
-    createImplicitLogin(
+    defineImplicitLogin(
         loginName: string,
         flow: (log: ILog) => IImplicitProvider,
         idScopes: string[],
         initialAccessToken: { name: string, resource: string, scopes: string[] }
-    ): IImplicitLogin;
+    ): void;
 
-    createHybridLogin(
+    defineHybridLogin(
         loginName: string,
         flow: (log: ILog) => IHybridProvider,
         idScopes: string[],
         initialAccessToken: { name: string, resource: string, scopes: string[] },
         requestRefreshToken: boolean
-    ): IHybridLogin;
+    ): void;
+
+    defineAuthcodeLogin(
+        loginName: string,
+        flow: (log: ILog) => IAuthcodeProvider,
+        requestRefreshToken: boolean
+    ): void;
+
+
+
+
+    //********************************************************************
+    //* Using the logins:
+    //* =================
+    //* 
+    //* 
+    //********************************************************************
+    login(
+        loginName: string,
+        userstate: any,
+        success: (userstate: any, accessTokenValue: string) => void,
+        redirecting: () => void,
+        error: (reason: any) => void
+    ): void;
+
+    logout(loginName: string): void;
 
     handleRedirect(
         url: string,
         success: (loginName: string, user: UserInfo, userstate: any) => void,
-        //noRedirect: () => void,
         error: (loginName: string, reason: any, userstate: any) => void
     ): boolean;
 
-    createAuthcodeLogin(
+    acquireAccessToken(
         loginName: string,
-        flow: (log: ILog) => IAuthcodeProvider,
-        requestRefreshToken: boolean
-    ): IAuthCodeLogin;
+        resource: string,
+        scopes: string[],
+        success: (token: string) => void,
+        error: (reason: any) => void
+    ): void;
 
-    getLogin(loginName: string): ILogin;
-
+    getUser(loginName: string): UserInfo;
     readonly loginNames: string[];
 }
 

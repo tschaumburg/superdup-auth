@@ -1,15 +1,8 @@
 ﻿import { ILog, ConsoleLog } from "superdup-auth-log";
-
-import { ILogin } from "../ilogin";
 import { UserStore } from "./userstore";
-import { IHybridLogin } from "../ihybridlogin";
-import { IImplicitLogin } from "../iimplicitlogin";
-import { IAuthCodeLogin } from "../iauthcodelogin";
 import { UserInfo } from "superdup-auth-core-providers";
 import { ILoginManager } from "../iloginmanager";
-import { IImplicitProvider, IHybridProvider, IAuthcodeProvider, IProviderManager } from "superdup-auth-core-providers";
-
-import { Login } from "./login";
+import { IProviderAdapter, IImplicitProvider, IHybridProvider, IAuthcodeProvider, IProviderManager } from "superdup-auth-core-providers";
 import { decodeHash } from "./tokenutils";
 
 export function createLoginManager(providerManager: IProviderManager, log: ILog): ILoginManager
@@ -21,7 +14,6 @@ export class LoginManager implements ILoginManager
 {
     private readonly log: ILog;
     private readonly _userManager: UserStore;
-    //private readonly _urlMapper: IUrlMapper<string> = new UrlMapper<string>();
     public get providerManager() { return this._providerManager; }
 
     constructor(private readonly _providerManager: IProviderManager, _log: ILog)
@@ -34,7 +26,7 @@ export class LoginManager implements ILoginManager
         this._userManager = new UserStore(_log);
     }
 
-    private _logins: { [id: string]: ILogin; } = {};
+    //private _logins: { [id: string]: ILogin; } = {};
     private _initialTokens: { [id: string]: string; } = {};
 
     //********************************************************************
@@ -43,12 +35,12 @@ export class LoginManager implements ILoginManager
     //* 
     //* 
     //********************************************************************
-    public createImplicitLogin(
+    public defineImplicitLogin(
         loginName: string,
         flow: (log: ILog) => IImplicitProvider,
         idScopes: string[],
         initialAccessToken: { name: string, resource: string, scopes: string[] }
-    ): IImplicitLogin
+    ): void
     {
         var flowlog = this.log.sublog(loginName);
 
@@ -60,19 +52,14 @@ export class LoginManager implements ILoginManager
                 initialAccessToken
             );
 
-        //this.registerAccessToken2(loginName, requestAccessToken.name, requestAccessToken.resource, requestAccessToken.scopes, requestAccessToken.protectUrls);
-
-        var login = new Login(this, provider, this._userManager, flowlog, loginName);
-        this._logins[loginName] = login;
-
-        return login;
+        this._loginNames.push(loginName);
     }
 
-    createAuthcodeLogin(
+    defineAuthcodeLogin(
         loginName: string,
         flow: (log: ILog) => IAuthcodeProvider,
         requestRefreshToken: boolean
-    ): IAuthCodeLogin
+    ): void
     {
         var flowlog = this.log.sublog(loginName);
 
@@ -83,19 +70,16 @@ export class LoginManager implements ILoginManager
                 requestRefreshToken
             );
 
-        var login = new Login(this, provider, this._userManager, flowlog, loginName);
-        this._logins[loginName] = login;
-
-        return login;
+        this._loginNames.push(loginName);
     }
 
-    public createHybridLogin(
+    public defineHybridLogin(
         loginName: string,
         flow: (log: ILog) => IHybridProvider,
         idScopes: string[],
         requestAccessToken: { name: string, resource: string, scopes: string[] },
         requestRefreshToken: boolean
-    ): IHybridLogin 
+    ): void 
     {
         var flowlog = this.log.sublog(loginName);
 
@@ -108,31 +92,101 @@ export class LoginManager implements ILoginManager
                 requestRefreshToken
             );
 
-        //this.registerAccessToken2(loginName, requestAccessToken.name, requestAccessToken.resource, requestAccessToken.scopes, requestAccessToken.protectUrls);
-        //for (var token of additionalAccessTokens)
-        //    this.registerAccessToken2(loginName, token.name, token.resource, token.scopes, token.protectUrls);
-
-        var login = new Login(this, provider, this._userManager, flowlog, loginName);
-        this._logins[loginName] = login;
-
-        return login;
+        this._loginNames.push(loginName);
     }
 
+    private _loginNames: string[] = [];
     public get loginNames(): string[]
     {
-        var res: string[] = [];
-
-        for (var loginName in this._logins)
-            res.push(loginName);
-
-        return res;
+        return this._loginNames;
     }
 
-    public getLogin(loginName: string): ILogin
+    //********************************************************************
+    //* ILogin: basic login/logout:
+    //* ===========================
+    //* 
+    //* 
+    //********************************************************************
+    public onLoggedIn: (loginName: string, tokenName: string, tokenValue: string) => void;
+    public login(
+        loginName: string,
+        userstate: any,
+        success: (userstate: any, accessTokenValue: string) => void,
+        redirecting: () => void,
+        error: (reason: any) => void
+    ): void 
     {
-        return this._logins[loginName];
+        this.log.info("login(loginName=" + loginName + ")");
+
+        var nonce: string = this.makeNonce(); // this.createNonce(loginName, accessTokenName);
+        var encodedState = JSON.stringify({ flow: loginName, nonce: nonce, uss: userstate });
+
+        this.log.info("login(loginName=" + loginName + ", nonce=" + nonce + /*", token=" + JSON.stringify(tokeninfo) +*/ ")");
+        var provider = this._providerManager.findProvider(loginName);
+        provider.login(
+            nonce,
+            encodedState,
+            (user, accessTokenName, accessTokenValue) =>
+            {
+                this.log.info("Login succeeeded!");
+                this._userManager.set(loginName, user);
+                if (!!success)
+                    success(userstate, accessTokenValue);
+                if (!!this.onLoggedIn)
+                    this.onLoggedIn(loginName, accessTokenName, accessTokenValue);
+            },
+            () =>
+            {
+                if (!!redirecting)
+                    redirecting();
+            },
+            (reason) =>
+            {
+                if (!!error)
+                    error(reason);
+            }
+        );
     }
 
+    private makeNonce(): string
+    {
+        var length = 10;
+        var text = "n"; // prefix "n" => nonce is valid property name
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < length; i++)
+        {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    }
+
+    public getUser(loginName: string): UserInfo
+    {
+        return this._userManager.get(loginName);
+    }
+
+    public onLoggingOut: (loginName: string) => void;
+    public logout(loginName: string): void
+    {
+        this.log.info("Logging out " + loginName);
+        if (!!this.onLoggingOut)
+            this.onLoggingOut(loginName);
+        var provider = this._providerManager.findProvider(loginName);
+        provider.logout();
+        this._userManager.clear(loginName);
+    }
+
+    public acquireAccessToken(
+        loginName: string,
+        resource: string,
+        scopes: string[],
+        success: (token: string) => void,
+        error: (reason: any) => void
+    ): void
+    {
+        var provider = this._providerManager.findProvider(loginName);
+        provider.requestAccessToken(resource, scopes, success, error);
+    }
     //********************************************************************
     //* Handling redirects:
     //* ===================
@@ -142,7 +196,6 @@ export class LoginManager implements ILoginManager
     public handleRedirect(
         url: string,
         success: (loginName: string, user: UserInfo, userstate: any) => void,
-        //noRedirect: () => void,
         error: (loginName: string, reason: any, userstate: any) => void
     ): any 
     {
@@ -158,12 +211,10 @@ export class LoginManager implements ILoginManager
         {
             var msg = "Not a redirect url";
             sublog.debug("handleRedirect(): ...not a redirect");
-            //noRedirect();
             return false;
         }
 
         var loginName = state.flow;
-        //var accessTokenName = state.at;
         var userstate = state.uss;
         var nonce = state.nonce;
 
@@ -176,7 +227,6 @@ export class LoginManager implements ILoginManager
             return true;
         }
 
-        //var requestedAccessTokenName = accessTokenName;
         sublog.debug("handleRedirect() => " + loginName + ".handleRedirect()");
 
         flow.handleRedirect(
@@ -201,7 +251,6 @@ export class LoginManager implements ILoginManager
                 sublog.debug("handleRedirect(): Saving tokens");
                 sublog.debug("handleRedirect():    idtoken = " + sanitizedIdtoken);
                 sublog.debug("handleRedirect():    " + accessTokenName + " = " + sanitizedAccessToken);
-                //this.tokenManager.setValue(accessTokenName, accessToken, sublog);
                 this._userManager.set(loginName, user);
                 try
                 {
